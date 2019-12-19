@@ -41,7 +41,7 @@ image:
 
 ## Cluster settings
 cluster:
-  enabled: false
+  enabled: true
   slaveCount: 2
 
 ## Use redis sentinel in the redis pod. This will disable the master and slave services and
@@ -114,15 +114,15 @@ sentinel:
   ## Redis Sentinel Service properties
   service:
     ##  Redis Sentinel Service type
-    type: NodePort
+    type: ClusterIP
     sentinelPort: 26379
     redisPort: 6379
 
     ## Specify the nodePort value for the LoadBalancer and NodePort service types.
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
     ##
-    sentinelNodePort: 32085
-    redisNodePort: 32086
+    # sentinelNodePort:
+    # redisNodePort:
 
     ## Provide any additional annotations which may be required. This can be used to
     ## set the LoadBalancer service type to internal only.
@@ -193,7 +193,7 @@ usePassword: true
 ## Defaults to a random 10-character alphanumeric string if not set and usePassword is true
 ## ref: https://github.com/bitnami/bitnami-docker-redis#setting-the-server-password-on-first-run
 ##
-password: redis_pass
+password: ""
 ## Use existing secret (ignores previous password)
 # existingSecret:
 ## Password key to be retrieved from Redis secret
@@ -326,7 +326,7 @@ master:
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
     ##
-    storageClass: my-local-pv
+    # storageClass: "-"
     accessModes:
     - ReadWriteOnce
     size: 8Gi

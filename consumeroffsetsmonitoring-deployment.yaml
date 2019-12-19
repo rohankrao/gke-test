@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: consumeroffsetsmonitoring
+  name: consumeroffsetsmonitoring
+spec:
+  selector:
+    matchLabels:
+      io.kompose.service: consumeroffsetsmonitoring
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: consumeroffsetsmonitoring
+    spec:
+      containers:
+      - env:
+        - name: BOOTSTRAP_SERVERS
+          value: izac-cp-kafka-headless:9092
+        - name: CONSUMER_OFFSETS_OUTPUT_TOPIC
+          value: consumerOffsetsTest3
+        - name: OFFSET_CONSUMER_CLIENT_ID
+          value: Kafka_ConsumerOffsets_Monitor
+        - name: OFFSET_CONSUMER_GROUP_ID
+          value: consumer-offset
+        - name: SCHEMA_REGISTRY_URL
+          value: izac-cp-schema-registry:8081
+        image: prohankumar/consumeroffsetsmonitoring
+        name: consumeroffsetsmonitoring
+        resources: {}
+      restartPolicy: Always
+status: {}
