@@ -105,11 +105,11 @@ service:
   ## If service.type is not set to NodePort, the following statement
   ## will be ignored.
   ##
-  nodePort: 32073
+  #nodePort: 32073
 
   ## Service type can be set to ClusterIP, NodePort or LoadBalancer.
   ##
-  type: NodePort
+  type: ClusterIP
 
   ## Service annotations
   ##
