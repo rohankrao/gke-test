@@ -86,17 +86,17 @@ resources: {}
 ## uncomment and modify the following livenessProbe and readinessProbe.
 ## These defaults should work with anything that uses the spring health actuator.
 livenessProbe:
-  httpGet:
-    path: /actuator/health
-    port: http
-  initialDelaySeconds: 300
-    periodSeconds: 10
+ httpGet:
+   path: /actuator/health
+   port: http
+ initialDelaySeconds: 300
+ periodSeconds: 10
 readinessProbe:
-  httpGet:
-    path: /actuator/health
-    port: http
-  initialDelaySeconds: 60
-  periodSeconds: 10
+ httpGet:
+   path: /actuator/health
+   port: http
+ initialDelaySeconds: 60
+ periodSeconds: 10
 
 nodeSelector: {}
 
