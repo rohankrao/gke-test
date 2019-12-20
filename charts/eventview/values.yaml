@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/eventview
-  tag: latest
+  tag: 0.01
   pullPolicy: IfNotPresent
 
 
