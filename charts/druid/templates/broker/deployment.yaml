@@ -34,7 +34,7 @@ spec:
           env:
           {{- if .Values.zookeeper.enabled }}
           - name: ZOOKEEPER_HOST
-            value: {{ .Release.Name }}-zookeeper-headless:2181
+            value: {{ .Release.Name }}-cp-zookeeper-headless:2181
           {{- else }}
           - name: ZOOKEEPER_HOST
             value: {{ .Release.Name }}-cp-zookeeper-headless:2181

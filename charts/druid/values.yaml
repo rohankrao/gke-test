@@ -213,7 +213,7 @@ middleManager:
 #zkHosts: druid-zookeeper-headless:2181
 
 zookeeper:
-  enabled: false
+  enabled: true
   ## Environmental variables to set in Zookeeper
   ##
   env:
