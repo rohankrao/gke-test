@@ -1,8 +1,8 @@
 # Default values for druid.
 
 image:
-  repository: apache/incubator-druid
-  tag: 0.16.1-incubating
+  repository: maver1ckpl/druid-docker
+  tag: 0.12.3-2
   pullPolicy: IfNotPresent
 
 env:
