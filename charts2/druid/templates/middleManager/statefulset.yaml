@@ -4,33 +4,33 @@ metadata:
   labels:
     app: {{ template "druid.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: {{ .Values.historical.name }}
+    component: {{ .Values.middleManager.name }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  name: {{ template "druid.historical.fullname" . }}
+  name: {{ template "druid.middleManager.fullname" . }}
 spec:
-  serviceName: {{ template "druid.historical.fullname" . }}
-  replicas: {{ .Values.historical.replicaCount }}
+  serviceName: {{ template "druid.middleManager.fullname" . }}
+  replicas: {{ .Values.middleManager.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "druid.name" . }}
       release: {{ .Release.Name }}
-      component: {{ .Values.historical.name }}
+      component: {{ .Values.middleManager.name }}
   template:
     metadata:
       labels:
         app: {{ template "druid.name" . }}
-        component: {{ .Values.historical.name }}
+        component: {{ .Values.middleManager.name }}
         release: {{ .Release.Name }}
-        {{- with .Values.historical.podAnnotations }}
+        {{- if .Values.middleManager.podAnnotations }}
       annotations:
-{{ toYaml . | indent 8 }}
+{{ toYaml .Values.middleManager.podAnnotations | indent 8 }}
         {{- end }}
     spec:
-      {{- if or .Values.historical.antiAffinity .Values.historical.nodeAffinity }}
+      {{- if or .Values.middleManager.antiAffinity .Values.middleManager.nodeAffinity }}
       affinity:
       {{- end }}
-      {{- if eq .Values.historical.antiAffinity "hard" }}
+      {{- if eq .Values.middleManager.antiAffinity "hard" }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - topologyKey: "kubernetes.io/hostname"
@@ -38,8 +38,8 @@ spec:
                 matchLabels:
                   app: "{{ template "druid.name" . }}"
                   release: "{{ .Release.Name }}"
-                  component: "{{ .Values.historical.name }}"
-      {{- else if eq .Values.historical.antiAffinity "soft" }}
+                  component: "{{ .Values.middleManager.name }}"
+      {{- else if eq .Values.middleManager.antiAffinity "soft" }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
@@ -49,30 +49,30 @@ spec:
                 matchLabels:
                   app: "{{ template "druid.name" . }}"
                   release: "{{ .Release.Name }}"
-                  component: "{{ .Values.historical.name }}"
+                  component: "{{ .Values.middleManager.name }}"
       {{- end }}
-      {{- with .Values.historical.nodeAffinity }}
+      {{- with .Values.middleManager.nodeAffinity }}
         nodeAffinity:
 {{ toYaml . | indent 10 }}
       {{- end }}
-{{- if .Values.historical.nodeSelector }}
+{{- if .Values.middleManager.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.historical.nodeSelector | indent 8 }}
+{{ toYaml .Values.middleManager.nodeSelector | indent 8 }}
 {{- end }}
-{{- if .Values.historical.tolerations }}
+{{- if .Values.middleManager.tolerations }}
       tolerations:
-{{ toYaml .Values.historical.tolerations | indent 8 }}
+{{ toYaml .Values.middleManager.tolerations | indent 8 }}
 {{- end }}
       containers:
       - name: druid
-        args: [ "historical" ]
+        args: [ "middleManager" ]
         env:
         {{- if .Values.zookeeper.enabled }}
         - name: ZOOKEEPER_HOST
-          value: {{ .Release.Name }}-zookeeper-headless:2181
+          value: {{ .Release.Name }}-cp-zookeeper-headless:2181
         {{- else }}
         - name: ZOOKEEPER_HOST
-          value: {{ .Values.zkHosts }}
+          value: {{ .Release.Name }}-cp-zookeeper-headless:2181
         {{- end }}
         {{- if .Values.mysql.enabled }}
         - name: DB_HOST
@@ -89,53 +89,53 @@ spec:
           value: "3306"
         {{- end }}
         - name: JAVA_OPTS
-          value: {{ .Values.historical.javaOpts }}
+          value: {{ .Values.middleManager.javaOpts }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
         resources:
-{{ toYaml .Values.historical.resources | indent 12 }}
+{{ toYaml .Values.middleManager.resources | indent 12 }}
         livenessProbe:
           initialDelaySeconds: 60
           httpGet:
             path: /status/health
-            port: {{ .Values.historical.port }}
+            port: {{ .Values.middleManager.port }}
         readinessProbe:
           initialDelaySeconds: 60
           httpGet:
             path: /status/health
-            port: {{ .Values.historical.port }}
+            port: {{ .Values.middleManager.port }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         ports:
-        - containerPort: {{ .Values.historical.port }}
+        - containerPort: {{ .Values.middleManager.port }}
           name: http
         volumeMounts:
         - mountPath: /var/druid/
           name: data
-  {{- if not .Values.historical.persistence.enabled }}
+  {{- if not .Values.middleManager.persistence.enabled }}
       volumes:
       - name: data
         emptyDir: {}
   {{- end }}
   updateStrategy:
-    type: {{ .Values.historical.updateStrategy.type }}
-  {{- if .Values.historical.persistence.enabled }}
+    type: {{ .Values.middleManager.updateStrategy.type }}
+  {{- if .Values.middleManager.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
       accessModes:
-        - {{ .Values.historical.persistence.accessMode | quote }}
-    {{- if .Values.historical.persistence.storageClass }}
-    {{- if (eq "-" .Values.historical.persistence.storageClass) }}
+        - {{ .Values.middleManager.persistence.accessMode | quote }}
+    {{- if .Values.middleManager.persistence.storageClass }}
+    {{- if (eq "-" .Values.middleManager.persistence.storageClass) }}
       storageClassName: ""
     {{- else }}
-      storageClassName: "{{ .Values.historical.persistence.storageClass }}"
+      storageClassName: "{{ .Values.middleManager.persistence.storageClass }}"
     {{- end }}
     {{- end }}
       resources:
         requests:
-          storage: "{{ .Values.historical.persistence.size }}"
+          storage: "{{ .Values.middleManager.persistence.size }}"
   {{ end }}

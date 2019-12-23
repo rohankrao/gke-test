@@ -14,7 +14,7 @@ broker:
   name: broker
 
   port: 8082
-  serviceType: NodePort
+  serviceType: ClusterIP
 
   javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
 
@@ -47,7 +47,7 @@ coordinator:
   name: coordinator
 
   port: 8081
-  serviceType: NodePort
+  serviceType: ClusterIP
 
   javaOpts: "-Xms1G -Xmx1G"
 
@@ -80,7 +80,7 @@ overlord:
   name: overlord
 
   port: 8090
-  serviceType: NodePort
+  serviceType: ClusterIP
 
   javaOpts: "-Xms1G -Xmx1G"
 
@@ -111,7 +111,7 @@ historical:
   name: historical
   replicaCount: 1
   port: 8083
-  serviceType: NodePort
+  serviceType: ClusterIP
 
   javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
 
@@ -160,7 +160,7 @@ middleManager:
   name: middle-manager
   replicaCount: 1
   port: 8091
-  serviceType: NodePort
+  serviceType: ClusterIP
 
   javaOpts: "-Xms1G -Xmx1G"
 
@@ -180,7 +180,7 @@ middleManager:
   persistence:
     enabled: true
     accessMode: ReadWriteOnce
-    size: "4Gi"
+    size: "30Gi"
     # storageClass: "ssd"
 
   antiAffinity: "soft"
@@ -210,7 +210,7 @@ middleManager:
 # Zookeeper:
 # ------------------------------------------------------------------------------
 
-zkHosts: izac-cp-zookeeper-headless:2181
+#zkHosts: druid-zookeeper-headless:2181
 
 zookeeper:
   enabled: false
