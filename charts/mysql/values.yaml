@@ -19,13 +19,13 @@ testFramework:
 ## Specify password for root user
 ##
 ## Default: random 10 character string
-# mysqlRootPassword: testing
+mysqlRootPassword: druidroot
 
 ## Create a database user
 ##
-# mysqlUser:
+mysqlUser: druid
 ## Default: random 10 character string
-# mysqlPassword:
+mysqlPassword: druid
 
 ## Allow unauthenticated access, uncomment to enable
 ##
