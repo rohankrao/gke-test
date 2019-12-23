@@ -37,7 +37,7 @@ spec:
             value: {{ .Release.Name }}-cp-zookeeper-headless:2181
           {{- else }}
           - name: ZOOKEEPER_HOST
-            value: {{ .Values.zkHosts }}
+            value: {{ .Release.Name }}-cp-zookeeper-headless:2181
           {{- end }}
           {{- if .Values.mysql.enabled }}
           - name: DB_HOST
