@@ -1,6 +1,6 @@
-# Confluent Open Source Helm Chart
+# Kubernetes helm chart for izac
 
-**The Confluent Platform Helm charts are in developer preview and are not supported for production use.**
+**Contains helm chart and deployment files for izac**
 
 The [Confluent Platform Helm charts](https://github.com/confluentinc/cp-helm-charts) enable you to deploy Confluent Platform services on Kubernetes for development, test, and proof of concept environments.
 
