@@ -8,11 +8,15 @@ image:
 env:
   DRUID_USE_CONTAINER_IP: true
   druid_zk_service_host: izac-cp-zookeeper-headless:2181
-  druid_metadata_storage_host:
+  druid_metadata_storage_host: izac-postgresql-headless
   druid_metadata_storage_type: postgresql
-  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgres:5432/druid
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
   druid_metadata_storage_connector_user: druid
   druid_metadata_storage_connector_password: FoolishPassword
+  # druid_extensions_loadList:
+  #   - druid-histogram
+  #   - druid-datasketches
+
 
 broker:
   replicaCount: 1

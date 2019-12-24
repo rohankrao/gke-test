@@ -15,7 +15,8 @@ helm repo update
 
 The Confluent Helm Chart documentation is located at [docs.confluent.io](https://docs.confluent.io/current/quickstart/cp-helm-charts/docs/index.html).
 
-helm install --name druid incubator/druid --set zkHosts=izac-cp-zookeeper-headless:2181 --set zookeeper.enabled=false --set historical.serviceType=NodePort --set middleManager.serviceType=NodePort --set broker.serviceType=NodePort --set overlord.serviceType=NodePort --set coordinator.serviceType=NodePort --set image.repository=apache/incubator-druid --set image.tag=0.16.0-incubating --set env.druid_zk_service_host=izac-cp-zookeeper-headless:2181 
+helm install --name druid incubator/druid --set zkHosts=izac-cp-zookeeper-headless:2181 --set zookeeper.enabled=false --set historical.serviceType=NodePort --set middleManager.serviceType=NodePort --set broker.serviceType=NodePort --set overlord.serviceType=NodePort --set coordinator.serviceType=NodePort --set image.repository=apache/incubator-druid --set image.tag=0.16.0-incubating --set env.druid_zk_service_host=izac-cp-zookeeper-headless:2181 --set env.druid_metadata_storage_host=izac-postgresql-headless --set env.druid_metadata_storage_type=postgresql --set env.druid_metadata_storage_connector_connectURI=jdbc:postgresql://izac-postgresql-headless:5432/druid --set env.druid_metadata_storage_connector_user=druid --set env.druid_metadata_storage_connector_password=FoolishPassword --set druid_extensions_loadList={postgresql-metadata-storage, druid-kafka-indexing-service, druid-avro-extensions}
+
 ## Contributing
 
 We welcome any contributions:

@@ -59,6 +59,8 @@ spec:
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
+          - name: druid_extensions_loadList
+            value: ["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]
           ports:
             - name: http
               containerPort: {{ .Values.overlord.port }}

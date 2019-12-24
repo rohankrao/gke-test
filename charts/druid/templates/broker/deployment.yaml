@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "druid.coordinator.fullname" . }}
+  name: {{ include "druid.broker.fullname" . }}
   labels:
     app: {{ include "druid.name" . }}
     chart: {{ include "druid.chart" . }}
-    component: {{ .Values.coordinator.name }}
+    component: {{ .Values.broker.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.coordinator.replicaCount }}
+  replicas: {{ .Values.broker.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "druid.name" . }}
       release: {{ .Release.Name }}
-      component: {{ .Values.coordinator.name }}
+      component: {{ .Values.broker.name }}
   template:
     metadata:
       labels:
         app: {{ include "druid.name" . }}
         release: {{ .Release.Name }}
-        component: {{ .Values.coordinator.name }}
-      {{- with .Values.coordinator.podAnnotations }}
+        component: {{ .Values.broker.name }}
+      {{- with .Values.broker.podAnnotations }}
       annotations:
 {{ toYaml . | indent 8 }}
-      {{- end }} 
+      {{- end }}        
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "coordinator" ]
+          args: [ "broker" ]
           env:
           {{- if .Values.zookeeper.enabled }}
           - name: ZOOKEEPER_HOST
@@ -52,38 +52,40 @@ spec:
             value: {{ .Values.mysql.mysqlDatabase }}
           - name: DB_PORT
             value: "3306"
+          - name: druid_extensions_loadList
+            value: ["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]
           {{- end }}
           - name: JAVA_OPTS
-            value: {{ .Values.coordinator.javaOpts }}
+            value: {{ .Values.broker.javaOpts }}
           {{- range $key, $value :=  .Values.env }}
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.coordinator.port }}
+              containerPort: {{ .Values.broker.port }}
               protocol: TCP
           livenessProbe:
             initialDelaySeconds: 60
             httpGet:
               path: /status/health
-              port: {{ .Values.coordinator.port }}
+              port: {{ .Values.broker.port }}
           readinessProbe:
             initialDelaySeconds: 60
             httpGet:
               path: /status/health
-              port: {{ .Values.coordinator.port }}
+              port: {{ .Values.broker.port }}
           resources:
-{{ toYaml .Values.coordinator.resources | indent 12 }}
-    {{- with .Values.coordinator.nodeSelector }}
+{{ toYaml .Values.broker.resources | indent 12 }}
+    {{- with .Values.broker.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.coordinator.affinity }}
+    {{- with .Values.broker.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.coordinator.tolerations }}
+    {{- with .Values.broker.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
