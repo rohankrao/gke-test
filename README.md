@@ -15,6 +15,7 @@ helm repo update
 
 The Confluent Helm Chart documentation is located at [docs.confluent.io](https://docs.confluent.io/current/quickstart/cp-helm-charts/docs/index.html).
 
+helm install --name druid incubator/druid --set zkHosts=izac-cp-zookeeper-headless:2181 --set zookeeper.enabled=false --set historical.serviceType=NodePort --set middleManager.serviceType=NodePort --set broker.serviceType=NodePort --set overlord.serviceType=NodePort --set coordinator.serviceType=NodePort --set image.repository=apache/incubator-druid --set image.tag=0.16.0-incubating --set env.druid_zk_service_host=izac-cp-zookeeper-headless:2181 
 ## Contributing
 
 We welcome any contributions:
@@ -32,3 +33,9 @@ Huge thanks to:
 - [kubernetes-kafka](https://github.com/Yolean/kubernetes-kafka)
 - [docker-kafka](https://github.com/solsson/dockerfiles)
 # gke-test
+
+
+gcloud compute firewall-rules create myservice --allow tcp:30547,tcp:31390,tcp:31701,tcp:30523,tcp:31533
+
+
+gcloud compute instances list

@@ -1,12 +1,18 @@
 # Default values for druid.
 
 image:
-  repository: maver1ckpl/druid-docker
-  tag: 0.12.3-2
+  repository: apache/incubator-druid
+  tag: 0.16.0-incubating
   pullPolicy: IfNotPresent
 
 env:
   DRUID_USE_CONTAINER_IP: true
+  druid_zk_service_host: izac-cp-zookeeper-headless:2181
+  druid_metadata_storage_host:
+  druid_metadata_storage_type: postgresql
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgres:5432/druid
+  druid_metadata_storage_connector_user: druid
+  druid_metadata_storage_connector_password: FoolishPassword
 
 broker:
   replicaCount: 1
@@ -14,7 +20,7 @@ broker:
   name: broker
 
   port: 8082
-  serviceType: ClusterIP
+  serviceType: NodePort
 
   javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
 
@@ -47,7 +53,7 @@ coordinator:
   name: coordinator
 
   port: 8081
-  serviceType: ClusterIP
+  serviceType: NodePort
 
   javaOpts: "-Xms1G -Xmx1G"
 
@@ -80,7 +86,7 @@ overlord:
   name: overlord
 
   port: 8090
-  serviceType: ClusterIP
+  serviceType: NodePort
 
   javaOpts: "-Xms1G -Xmx1G"
 
@@ -111,7 +117,7 @@ historical:
   name: historical
   replicaCount: 1
   port: 8083
-  serviceType: ClusterIP
+  serviceType: NodePort
 
   javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
 
@@ -160,7 +166,7 @@ middleManager:
   name: middle-manager
   replicaCount: 1
   port: 8091
-  serviceType: ClusterIP
+  serviceType: NodePort
 
   javaOpts: "-Xms1G -Xmx1G"
 
