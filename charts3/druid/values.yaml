@@ -5,6 +5,11 @@ image:
   tag: 0.16.1-incubating
   pullPolicy: IfNotPresent
 
+securityContext:
+  runAsUser: 0
+  fsGroup: 1000
+
+
 env:
   DRUID_USE_CONTAINER_IP: true
   druid_zk_service_host: izac-cp-zookeeper-headless:2181
@@ -44,7 +49,7 @@ broker:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
@@ -94,7 +99,7 @@ coordinator:
     enabled: true
     accessMode: ReadWriteOnce
     size: "30Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
@@ -144,7 +149,7 @@ overlord:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
@@ -195,7 +200,7 @@ historical:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
@@ -244,7 +249,7 @@ middleManager:
     enabled: true
     accessMode: ReadWriteOnce
     size: "10Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
@@ -294,7 +299,7 @@ router:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    # storageClass: "ssd"
 
   antiAffinity: "soft"
 
