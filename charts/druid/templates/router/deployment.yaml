@@ -53,7 +53,7 @@ spec:
           - name: DB_PORT
             value: "3306"
           - name: druid_extensions_loadList
-            value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions", "mysql-metadata-storage"]'
+            value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]'
           {{- end }}
           - name: JAVA_OPTS
             value: {{ .Values.router.javaOpts }}
