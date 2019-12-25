@@ -223,7 +223,7 @@ router:
   port: 8888
   serviceType: NodePort
 
-  javaOpts: "-Xms2G -Xmx2G"
+  javaOpts: "-Xms1G -Xmx1G"
 
   ingress:
     enabled: false

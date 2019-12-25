@@ -55,7 +55,7 @@ spec:
             - name: KAFKA_CONSUMER_GROUP_ID_ADMIN
               value: {{ .Values.kafka.kafkaConsumerGroupIDAdmin}}
             - name: DRUID_QUERY_URL
-              value: druid-broker:8082
+              value: http://{{ .Release.Name }}-druid-broker:8082
             - name: DRUID_CONSUMER_INFO_DATASOURCE
               value: {{ .Values.druid.consumerInfoDataSource}}
             - name: DRUID_CONSUMER_INFO_GRANULARITY
