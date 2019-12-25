@@ -116,6 +116,9 @@ spec:
         volumeMounts:
         - mountPath: /opt/druid/var
           name: data
+        securityContext:
+          fsGroup: {{ .Values.securityContext.fsGroup }}
+          runAsUser: {{ .Values.securityContext.runAsUser }}
   {{- if not .Values.overlord.persistence.enabled }}
       volumes:
       - name: data
