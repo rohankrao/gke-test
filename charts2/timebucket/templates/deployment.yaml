@@ -51,7 +51,7 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             - name: "REDIS_IP"
-              value: {{ .Release.Name }}-redis-headless
+              value: {{ .Release.Name }}-redis-master
             - name: "REDIS_PORT"
               value: {{ .Values.redis.port | quote}}
             - name: "REDIS_PASSWORD"

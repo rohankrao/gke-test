@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/timebucket
-  tag: latest
+  tag: 0.02
   pullPolicy: IfNotPresent
 
 redis:
