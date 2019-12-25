@@ -114,7 +114,7 @@ spec:
         - containerPort: {{ .Values.middleManager.port }}
           name: http
         volumeMounts:
-        - mountPath: /var/druid/
+        - mountPath: /opt/druid/var
           name: data
   {{- if not .Values.middleManager.persistence.enabled }}
       volumes:

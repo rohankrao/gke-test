@@ -2,7 +2,7 @@
 
 image:
   repository: apache/incubator-druid
-  tag: 0.16.0-incubating
+  tag: 0.16.1-incubating
   pullPolicy: IfNotPresent
 
 env:
@@ -10,7 +10,7 @@ env:
   druid_zk_service_host: izac-cp-zookeeper-headless:2181
   # druid_metadata_storage_host: ""
   druid_metadata_storage_type: postgresql
-  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql:5432/druid
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
   druid_metadata_storage_connector_user: druid
   druid_metadata_storage_connector_password: FoolishPassword
   # druid_extensions_loadList:

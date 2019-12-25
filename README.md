@@ -45,3 +45,6 @@ gcloud compute firewall-rules create myservice --allow tcp:30000-32767
 
 
 gcloud compute instances list
+
+
+curl -X POST "http://34.69.86.10:32074/events/profile/consumerOffsetsTest3" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"dimensions\": [ \"consumerGroup\", \"topic\", \"partition\", \"offset\", \"lag\"], \"segmentGranularity\": \"hour\", \"timestampColumn\": \"time\", \"timestampFormat\": \"millis\"}"

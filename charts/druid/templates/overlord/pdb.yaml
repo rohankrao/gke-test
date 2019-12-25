@@ -1,0 +1,24 @@
+{{- if .Values.overlord.podDisruptionBudget.enabled }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: {{ template "druid.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    component: {{ .Values.overlord.name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "druid.overlord.fullname" . }}
+spec:
+{{- if .Values.overlord.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.overlord.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.overlord.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.overlord.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "druid.name" . }}
+      component: {{ .Values.overlord.name }}
+      release: {{ .Release.Name }}
+{{- end }}
