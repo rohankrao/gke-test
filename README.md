@@ -36,7 +36,7 @@ Huge thanks to:
 # gke-test
 
 
-gcloud compute firewall-rules create myservice --allow tcp:30547,tcp:31390,tcp:31701,tcp:30523,tcp:31533
+gcloud compute firewall-rules create myservice --allow tcp:30000-32767
 
 
 gcloud compute instances list

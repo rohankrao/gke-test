@@ -215,6 +215,39 @@ middleManager:
   updateStrategy:
     type: RollingUpdate
 
+router:
+  replicaCount: 1
+
+  name: router
+
+  port: 8888
+  serviceType: NodePort
+
+  javaOpts: "-Xms2G -Xmx2G"
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - chart-example.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  podAnnotations: {}
+
 
 # ------------------------------------------------------------------------------
 # Zookeeper:
