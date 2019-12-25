@@ -52,8 +52,6 @@ spec:
             value: {{ .Values.mysql.mysqlDatabase }}
           - name: DB_PORT
             value: "3306"
-          - name: druid_extensions_loadList
-            value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]'
           {{- end }}
           - name: JAVA_OPTS
             value: {{ .Values.coordinator.javaOpts }}
@@ -61,6 +59,8 @@ spec:
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
+          - name: druid_extensions_loadList
+            value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]'
           ports:
             - name: http
               containerPort: {{ .Values.coordinator.port }}
