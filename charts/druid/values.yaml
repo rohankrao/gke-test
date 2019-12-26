@@ -46,7 +46,7 @@ broker:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 
@@ -96,7 +96,7 @@ coordinator:
     enabled: true
     accessMode: ReadWriteOnce
     size: "30Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 
@@ -146,7 +146,7 @@ overlord:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 
@@ -197,7 +197,7 @@ historical:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 
@@ -246,7 +246,7 @@ middleManager:
     enabled: true
     accessMode: ReadWriteOnce
     size: "10Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 
@@ -296,7 +296,7 @@ router:
     enabled: true
     accessMode: ReadWriteOnce
     size: "4Gi"
-    storageClass: "standard"
+    #storageClass: "standard"
 
   antiAffinity: "soft"
 

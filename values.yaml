@@ -45,7 +45,7 @@ cp-kafka:
   ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
   imagePullSecrets:
   #  - name: "regcred"
-  heapOptions: "-Xms512M -Xmx2048M"
+  heapOptions: "-Xms512M -Xmx1024M"
   persistence:
     enabled: true
     # storageClass: ""
@@ -83,27 +83,6 @@ cp-schema-registry:
   #   cpu: 100m
   #   memory: 128Mi
 
-## ------------------------------------------------------
-## REST Proxy
-## ------------------------------------------------------
-cp-kafka-rest:
-  enabled: true
-  image: confluentinc/cp-kafka-rest
-  imageTag: 5.3.1
-  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
-  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
-  imagePullSecrets:
-  #  - name: "regcred"
-  heapOptions: "-Xms512M -Xmx512M"
-  resources: {}
-  ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
-  ## and remove the curly braces after 'resources:'
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
 
 ## ------------------------------------------------------
 ## Kafka Connect
@@ -128,3 +107,231 @@ cp-kafka-connect:
   #   memory: 128Mi
 
 
+consumeroffsetmonitoring:
+  enabled: true
+  image:
+    repository: prohankumar/consumeroffsetsmonitoring
+    tag: latest
+  kafka:
+    consumerOffsetsOutputTopic: consumerOffsetsTest3
+    offsetConsumerClientID: Kafka_ConsumerOffsets_Monitor
+    offsetConsumerGroupID: consumer-offset
+    numberOfRecordsToCommit: 5
+
+druid:
+  image:
+    repository: apache/incubator-druid
+    tag: 0.16.1-incubating
+  env:
+    DRUID_USE_CONTAINER_IP: true
+    druid_zk_service_host: izac-cp-zookeeper-headless:2181
+    # druid_metadata_storage_host: ""
+    druid_metadata_storage_type: postgresql
+    druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
+    druid_metadata_storage_connector_user: druid
+    druid_metadata_storage_connector_password: FoolishPassword
+
+
+    DRUID_XMX: 1g
+    DRUID_XMS: 1g
+    DRUID_MAXNEWSIZE: 250m
+    DRUID_NEWSIZE: 250m
+    DRUID_MAXDIRECTMEMORYSIZE: 6172m
+
+    druid_emitter_logging_logLevel: debug
+
+    druid_coordinator_balancer_strategy: cachingCost
+
+    druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 268435456
+
+  
+  broker:
+    name: broker
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "4Gi"
+      #storageClass: "standard"
+
+  coordinator:
+    name: coordinator
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms1G -Xmx1G"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "30Gi"
+      #storageClass: "standard"
+
+  overlord:
+    name: overlord
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms1G -Xmx1G"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "4Gi"
+      #storageClass: "standard"
+
+  historical:
+    name: historical
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "4Gi"
+      #storageClass: "standard"
+
+  middleManager:
+    name: middle-manager
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms1G -Xmx1G"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "10Gi"
+      #storageClass: "standard"
+
+  router:
+    name: router
+    replicaCount: 1
+    serviceType: NodePort
+    javaOpts: "-Xms1G -Xmx1G"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: "4Gi"
+      #storageClass: "standard"
+
+
+eventview:
+  enabled: true
+  image:
+    repository: prohankumar/eventview
+    tag: 0.02
+  redis:
+    port: 6379
+    password: redis_pass
+  kafka:
+    metadataMaxAgeMs: 300000
+    consumerGroupID: eventview
+  druid:
+    taskDuration: PT10M
+    completionTimeout: PT20M
+  service:
+    enabled: true
+    httpPort: 80
+    nodePort: 32074
+    type: NodePort
+
+kafkaadmin:
+  enabled: true
+  image:
+    repository: prohankumar/kafkaadmin
+    tag: 0.02
+  kafka:
+    kafkaConsumerGroupIDAdmin: kafkaAdmin
+  druid:
+    consumerInfoDataSource: consumerOffsetsTest3
+    consumerInfoGranularity: hour
+  service:
+    enabled: true
+    httpPort: 80
+    nodePort: 32073
+    type: NodePort
+
+metadata:
+  enabled: true
+  image:
+    repository: prohankumar/metadata
+    tag: latest
+  schemaSubjectNamePrefix: metadata
+  service:
+    enabled: true
+    httpPort: 80
+    nodePort: 32072
+    type: NodePort
+
+timebucket:
+  enabled: true
+  image:
+    repository: prohankumar/timebucket
+    tag: 0.02
+  redis:
+    port: 6379
+    password: redis_pass
+  kafka:
+    metadataMaxAgeMs: 300000
+    consumerGroupID: timeBucket
+  service:
+    enabled: true
+    httpPort: 80
+    nodePort: 32071
+    type: NodePort
+
+
+redis:
+  image:
+    registry: docker.io
+    repository: bitnami/redis
+    tag: 5.0.7-debian-9-r12
+  cluster:
+    enabled: true
+    slaveCount: 2
+  sentinel:
+    enabled: false
+  usePassword: true
+  password: "redis_pass"
+  master:
+    disableCommands:
+    - FLUSHDB
+    - FLUSHALL
+    service:
+      type: NodePort
+      port: 6379
+      nodePort: 30679
+    persistence:
+      enabled: true
+      size: 8Gi
+  slave:
+    service:
+      type: ClusterIP
+      port: 6379
+    port: 6379
+    disableCommands:
+    - FLUSHDB
+    - FLUSHALL
+    persistence:
+      enabled: true
+      size: 8Gi
+
+
+postgresql:
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 11.6.0-debian-9-r0
+  replication:
+    enabled: false
+    user: repl_user
+    password: repl_password
+    slaveReplicas: 1
+  postgresqlPostgresPassword:
+  postgresqlUsername: druid
+  postgresqlPassword: FoolishPassword
+  postgresqlDatabase: druid
+  service:
+    type: NodePort
+    port: 5432
+    nodePort: 32432
+  persistence:
+    enabled: true
+    size: 8Gi

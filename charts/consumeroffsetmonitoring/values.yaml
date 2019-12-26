@@ -13,6 +13,7 @@ kafka:
   consumerOffsetsOutputTopic: consumerOffsetsTest3
   offsetConsumerClientID: Kafka_ConsumerOffsets_Monitor
   offsetConsumerGroupID: consumer-offset
+  numberOfRecordsToCommit: 5
 
 imagePullSecrets: []
 nameOverride: ""

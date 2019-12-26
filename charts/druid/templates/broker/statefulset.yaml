@@ -96,6 +96,13 @@ spec:
         {{- end }}
         - name: druid_extensions_loadList
           value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]'
+
+        - name: druid_indexer_runner_javaOptsArray
+          value: '["-server", "-Xmx1g", "-Xms1g", "-XX:MaxDirectMemorySize=3g", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]'
+
+        - name: DRUID_LOG4J
+          value: '<?xml version="1.0" encoding="UTF-8" ?><Configuration status="WARN"><Appenders><Console name="Console" target="SYSTEM_OUT"><PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/></Console></Appenders><Loggers><Root level="info"><AppenderRef ref="Console"/></Root><Logger name="org.apache.druid.jetty.RequestLog" additivity="false" level="DEBUG"><AppenderRef ref="Console"/></Logger></Loggers></Configuration>'
+
         resources:
 {{ toYaml .Values.broker.resources | indent 12 }}
         livenessProbe:
