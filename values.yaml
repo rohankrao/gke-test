@@ -132,17 +132,17 @@ druid:
     druid_metadata_storage_connector_password: FoolishPassword
 
 
-    DRUID_XMX: 1g
-    DRUID_XMS: 1g
-    DRUID_MAXNEWSIZE: 250m
-    DRUID_NEWSIZE: 250m
-    DRUID_MAXDIRECTMEMORYSIZE: 6172m
+    # DRUID_XMX: 1g
+    # DRUID_XMS: 1g
+    # DRUID_MAXNEWSIZE: 250m
+    # DRUID_NEWSIZE: 250m
+    # DRUID_MAXDIRECTMEMORYSIZE: 6172m
 
-    druid_emitter_logging_logLevel: debug
+    # druid_emitter_logging_logLevel: debug
 
-    druid_coordinator_balancer_strategy: cachingCost
+    # druid_coordinator_balancer_strategy: cachingCost
 
-    druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 268435456
+    # druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 268435456
 
   
   broker:
