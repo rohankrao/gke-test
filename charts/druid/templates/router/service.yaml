@@ -15,6 +15,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+      nodePort: {{ .Values.router.nodePort }}
   selector:
     app: {{ include "druid.name" . }}
     release: {{ .Release.Name }}

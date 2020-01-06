@@ -67,15 +67,6 @@ spec:
       - name: druid
         args: [ "coordinator" ]
         env:
-        {{- if .Values.zookeeper.enabled }}
-        - name: ZOOKEEPER_HOST
-          value: {{ .Release.Name }}-cp-zookeeper-headless:2181
-        {{- else }}
-        - name: ZOOKEEPER_HOST
-          value: {{ .Release.Name }}-cp-zookeeper-headless:2181
-        {{- end }}
-        - name: JAVA_OPTS
-          value: {{ .Values.coordinator.javaOpts }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
@@ -88,6 +79,22 @@ spec:
 
         - name: DRUID_LOG4J
           value: '<?xml version="1.0" encoding="UTF-8" ?><Configuration status="WARN"><Appenders><Console name="Console" target="SYSTEM_OUT"><PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/></Console></Appenders><Loggers><Root level="info"><AppenderRef ref="Console"/></Root><Logger name="org.apache.druid.jetty.RequestLog" additivity="false" level="DEBUG"><AppenderRef ref="Console"/></Logger></Loggers></Configuration>'
+        
+        - name: druid_zk_service_host
+          value: {{ .Release.Name }}-cp-zookeeper-headless:2181
+
+        - name: druid_metadata_storage_type
+          value: postgresql
+
+        - name: druid_metadata_storage_connector_connectURI
+          value: jdbc:postgresql://{{ .Release.Name }}-postgresql-headless:5432/druid
+
+        - name: druid_metadata_storage_connector_user
+          value: druid
+
+        - name: druid_metadata_storage_connector_password
+          value: FoolishPassword
+
         resources:
 {{ toYaml .Values.coordinator.resources | indent 12 }}
         livenessProbe:

@@ -76,6 +76,8 @@ spec:
               value: {{ .Values.druid.taskDuration}}
             - name: "DRUID_COMPLETION_TIMEOUT"
               value: {{ .Values.druid.completionTimeout }}
+            - name: server.servlet.context-path
+              value: {{ .Values.springContextPath }}
 
           volumeMounts:
             - name: data

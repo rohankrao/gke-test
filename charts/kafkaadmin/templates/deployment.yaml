@@ -60,6 +60,8 @@ spec:
               value: {{ .Values.druid.consumerInfoDataSource}}
             - name: DRUID_CONSUMER_INFO_GRANULARITY
               value: {{ .Values.druid.consumerInfoGranularity}}
+            - name: server.servlet.context-path
+              value: {{ .Values.springContextPath }}
           volumeMounts:
             - name: data
               mountPath: /data

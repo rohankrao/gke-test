@@ -17,7 +17,7 @@ kafka:
   metadataMaxAgeMs: 300000
   consumerGroupID: timeBucket
 
-
+springContextPath: "/timebucket"
 
 nameOverride: ""
 fullnameOverride: ""

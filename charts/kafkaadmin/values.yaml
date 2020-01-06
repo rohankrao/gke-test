@@ -17,6 +17,8 @@ druid:
   consumerInfoDataSource: consumerOffsetsTest3
   consumerInfoGranularity: hour
 
+springContextPath: "/kafkaadmin"
+
 nameOverride: ""
 fullnameOverride: ""
 

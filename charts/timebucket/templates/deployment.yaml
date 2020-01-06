@@ -62,6 +62,8 @@ spec:
               value: {{ .Values.kafka.metadataMaxAgeMs | quote}}
             - name: "KAFKA_CONSUMER_GROUP_ID"
               value: {{ .Values.kafka.consumerGroupID }}
+            - name: server.servlet.context-path
+              value: {{ .Values.springContextPath }}
           volumeMounts:
             - name: data
               mountPath: /data

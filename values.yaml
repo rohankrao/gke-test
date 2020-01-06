@@ -124,12 +124,12 @@ druid:
     tag: 0.16.1-incubating
   env:
     DRUID_USE_CONTAINER_IP: true
-    druid_zk_service_host: izac-cp-zookeeper-headless:2181
-    # druid_metadata_storage_host: ""
-    druid_metadata_storage_type: postgresql
-    druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
-    druid_metadata_storage_connector_user: druid
-    druid_metadata_storage_connector_password: FoolishPassword
+    # druid_zk_service_host: izac-cp-zookeeper-headless:2181
+    # # druid_metadata_storage_host: ""
+    # druid_metadata_storage_type: postgresql
+    # druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
+    # druid_metadata_storage_connector_user: druid
+    # druid_metadata_storage_connector_password: FoolishPassword
 
 
     # DRUID_XMX: 1g
@@ -148,8 +148,7 @@ druid:
   broker:
     name: broker
     replicaCount: 1
-    serviceType: NodePort
-    javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
+    serviceType: ClusterIP
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -159,8 +158,7 @@ druid:
   coordinator:
     name: coordinator
     replicaCount: 1
-    serviceType: NodePort
-    javaOpts: "-Xms1G -Xmx1G"
+    serviceType: ClusterIP
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -170,8 +168,7 @@ druid:
   overlord:
     name: overlord
     replicaCount: 1
-    serviceType: NodePort
-    javaOpts: "-Xms1G -Xmx1G"
+    serviceType: ClusterIP
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -181,8 +178,7 @@ druid:
   historical:
     name: historical
     replicaCount: 1
-    serviceType: NodePort
-    javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
+    serviceType: ClusterIP
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -192,8 +188,7 @@ druid:
   middleManager:
     name: middle-manager
     replicaCount: 1
-    serviceType: NodePort
-    javaOpts: "-Xms1G -Xmx1G"
+    serviceType: ClusterIP
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -204,7 +199,7 @@ druid:
     name: router
     replicaCount: 1
     serviceType: NodePort
-    javaOpts: "-Xms1G -Xmx1G"
+    nodePort: 30888
     persistence:
       enabled: true
       accessMode: ReadWriteOnce

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "druid.coordinator.fullname" . }}
+  labels:
+    app: {{ include "druid.name" . }}
+    chart: {{ include "druid.chart" . }}
+    component: {{ .Values.coordinator.name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.coordinator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "druid.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.coordinator.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "druid.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.coordinator.name }}
+      {{- with .Values.coordinator.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+      {{- end }} 
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [ "coordinator" ]
+          env:
+          {{- range $key, $value :=  .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          - name: druid_extensions_loadList
+            value: '["postgresql-metadata-storage", "druid-kafka-indexing-service", "druid-avro-extensions"]'
+
+          - name: druid_indexer_runner_javaOptsArray
+            value: '["-server", "-Xmx1g", "-Xms1g", "-XX:MaxDirectMemorySize=3g", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]'
+
+          - name: DRUID_LOG4J
+            value: '<?xml version="1.0" encoding="UTF-8" ?><Configuration status="WARN"><Appenders><Console name="Console" target="SYSTEM_OUT"><PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/></Console></Appenders><Loggers><Root level="info"><AppenderRef ref="Console"/></Root><Logger name="org.apache.druid.jetty.RequestLog" additivity="false" level="DEBUG"><AppenderRef ref="Console"/></Logger></Loggers></Configuration>'
+          
+          - name: druid_zk_service_host
+            value: {{ .Release.Name }}-cp-zookeeper-headless:2181
+
+          - name: druid_metadata_storage_type
+            value: postgresql
+
+          - name: druid_metadata_storage_connector_connectURI
+            value: jdbc:postgresql://{{ .Release.Name }}-postgresql-headless:5432/druid
+
+          - name: druid_metadata_storage_connector_user
+            value: druid
+
+          - name: druid_metadata_storage_connector_password
+            value: FoolishPassword
+          ports:
+            - name: http
+              containerPort: {{ .Values.coordinator.port }}
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              path: /status/health
+              port: {{ .Values.coordinator.port }}
+          readinessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              path: /status/health
+              port: {{ .Values.coordinator.port }}
+          resources:
+{{ toYaml .Values.coordinator.resources | indent 12 }}
+    {{- with .Values.coordinator.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.coordinator.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.coordinator.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

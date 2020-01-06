@@ -11,6 +11,8 @@ image:
 
 schemaSubjectNamePrefix: metadata
 
+springContextPath: "/metadata"
+
 nameOverride: ""
 fullnameOverride: ""
 

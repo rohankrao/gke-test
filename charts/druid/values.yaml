@@ -7,12 +7,12 @@ image:
 
 env:
   DRUID_USE_CONTAINER_IP: true
-  druid_zk_service_host: izac-cp-zookeeper-headless:2181
-  # druid_metadata_storage_host: ""
-  druid_metadata_storage_type: postgresql
-  druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
-  druid_metadata_storage_connector_user: druid
-  druid_metadata_storage_connector_password: FoolishPassword
+  # druid_zk_service_host: izac-cp-zookeeper-headless:2181
+  # # druid_metadata_storage_host: ""
+  # druid_metadata_storage_type: postgresql
+  # druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
+  # druid_metadata_storage_connector_user: druid
+  # druid_metadata_storage_connector_password: FoolishPassword
   # druid_extensions_loadList:
   #   - druid-histogram
   #   - druid-datasketches
@@ -25,9 +25,7 @@ broker:
   name: broker
   replicaCount: 1
   port: 8082
-  serviceType: NodePort
-
-  javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
+  serviceType: ClusterIP
 
   ingress:
     enabled: false
@@ -75,9 +73,8 @@ coordinator:
   name: coordinator
   replicaCount: 1
   port: 8081
-  serviceType: NodePort
+  serviceType: ClusterIP
 
-  javaOpts: "-Xms1G -Xmx1G"
 
   ingress:
     enabled: false
@@ -125,9 +122,8 @@ overlord:
   name: overlord
   replicaCount: 1
   port: 8090
-  serviceType: NodePort
+  serviceType: ClusterIP
 
-  javaOpts: "-Xms1G -Xmx1G"
 
   ingress:
     enabled: false
@@ -176,9 +172,8 @@ historical:
   name: historical
   replicaCount: 1
   port: 8083
-  serviceType: NodePort
+  serviceType: ClusterIP
 
-  javaOpts: "-Xms2G -Xmx2G -XX:MaxDirectMemorySize=8g"
 
   ingress:
     enabled: false
@@ -225,9 +220,8 @@ middleManager:
   name: middle-manager
   replicaCount: 1
   port: 8091
-  serviceType: NodePort
+  serviceType: ClusterIP
 
-  javaOpts: "-Xms1G -Xmx1G"
 
   ingress:
     enabled: false
@@ -275,9 +269,9 @@ router:
   name: router
   replicaCount: 1
   port: 8888
+  
   serviceType: NodePort
-
-  javaOpts: "-Xms1G -Xmx1G"
+  nodePort: 30888
 
   ingress:
     enabled: false
@@ -322,23 +316,6 @@ router:
 
 
 
-
-# ------------------------------------------------------------------------------
-# Zookeeper:
-# ------------------------------------------------------------------------------
-
-#zkHosts: druid-zookeeper-headless:2181
-
-zookeeper:
-  enabled: false
-  ## Environmental variables to set in Zookeeper
-  ##
-  env:
-    ## The JVM heap size to allocate to Zookeeper
-    ZK_HEAP_SIZE: "512M"
-  ## Configure Zookeeper persistence
-  persistence:
-    enabled: true
 
 
 

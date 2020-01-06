@@ -22,6 +22,8 @@ druid:
   taskDuration: PT10M
   completionTimeout: PT20M
 
+springContextPath: "/eventview"
+
 nameOverride: ""
 fullnameOverride: ""
 

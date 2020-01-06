@@ -54,6 +54,8 @@ spec:
               value: {{ .Release.Name }}-cp-schema-registry:8081
             - name: SCHEMA_SUBJECT_NAME_SUFFIX
               value: {{ .Values.schemaSubjectNamePrefix }}
+            - name: server.servlet.context-path
+              value: {{ .Values.springContextPath }}
           volumeMounts:
             - name: data
               mountPath: /data
