@@ -120,8 +120,8 @@ consumeroffsetmonitoring:
 
 druid:
   image:
-    repository: apache/incubator-druid
-    tag: 0.16.1-incubating
+    repository: prohankumar/druid2
+    tag: latest
   env:
     DRUID_USE_CONTAINER_IP: true
     # druid_zk_service_host: izac-cp-zookeeper-headless:2181
