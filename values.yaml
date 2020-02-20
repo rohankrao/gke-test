@@ -120,9 +120,10 @@ consumeroffsetmonitoring:
 
 druid:
   image:
-    repository: prohankumar/druid2
-    tag: latest
+    repository: apache/incubator-druid
+    tag: 0.16.1-incubating
   env:
+    druid.coordinator.asOverlord.enabled: true
     DRUID_USE_CONTAINER_IP: true
     # druid_zk_service_host: izac-cp-zookeeper-headless:2181
     # # druid_metadata_storage_host: ""
@@ -163,16 +164,6 @@ druid:
       enabled: true
       accessMode: ReadWriteOnce
       size: "30Gi"
-      #storageClass: "standard"
-
-  overlord:
-    name: overlord
-    replicaCount: 1
-    serviceType: ClusterIP
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "4Gi"
       #storageClass: "standard"
 
   historical:

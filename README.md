@@ -12,8 +12,13 @@ helm init --service-account tiller
 ## Install IZAC helm charts
 
 ```
+# To install helm chart with name "izac"
 helm install --name izac izac-helm-charts
+
+# To get pods
 kubectl get pods
+
+# To get services
 kubectl get svc
 ```
 
@@ -21,8 +26,14 @@ kubectl get svc
 ## Managing the release
 
 ```
-helm del --purge izac
+# To get all helm releases
 helm ls
+
+# To delete a release
+helm del --purge izac
+
+# To change anything after installing a release
+helm upgrade izac izac-helm-charts
 ```
 
 ## Managing pods
@@ -30,6 +41,7 @@ helm ls
 ```
 kubectl describe pod <pod-name>
 kubectl logs --follow <pod-name>
+kubectl delete pod <pod-name>
 ```
 
 ## Managing GKE cluster
@@ -43,8 +55,14 @@ gcloud container clusters resize standard-cluster-1 --num-nodes=1 --zone us-cent
 ## Setting up NGINX-Ingress
 
 ```
+# Create static IP
+gcloud compute addresses create izac-ip --region us-central1
+
+# Get static IP
+gcloud compute addresses describe izac-ip --region us-central1
+
 # Install ingress controller
-helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
+helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true --set controller.service.loadBalancerIP="<regional-static-ip>"
 
 # Save the below text and change service name, host and path
 apiVersion: extensions/v1beta1
@@ -52,6 +70,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.global-static-ip-name: izac-ip
   name: ingress
 spec:
   rules:

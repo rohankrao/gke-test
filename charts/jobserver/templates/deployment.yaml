@@ -45,40 +45,19 @@ spec:
             {{- if hasKey .Values.spring.config "secretName" }}
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
               value: "file:/config/secret.yml"
-            {{- end }}
+            {{- end }}  
             {{- range $key, $value := .Values.extraEnv }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            - name: "REDIS_IP"
-              value: {{ .Release.Name }}-redis-headless
-            - name: "REDIS_PORT"
-              value: {{ .Values.redis.port | quote}}
-            - name: "REDIS_PASSWORD"
-              value: {{ .Values.redis.password }}
             - name: "BOOTSTRAP_SERVERS"
               value: PLAINTEXT://{{ .Release.Name }}-cp-kafka-headless:9092
             - name: "METADATA_MAX_AGE_MS"
               value: {{ .Values.kafka.metadataMaxAgeMs | quote}}
-            - name: "KAFKA_CONSUMER_GROUP_ID_EVENTVIEW"
-              value: {{ .Values.kafka.consumerGroupID }}
-            - name: "SCHEMA_REGISTRY_URL"
-              value: http://{{ .Release.Name }}-cp-schema-registry:8081
-            - name: "KAFKA_CONNECT_URL"
-              value: http://{{ .Release.Name }}-cp-kafka-connect:8083
-            - name: "BOOTSTRAP_SERVERS_FOR_DRUID"
-              value: PLAINTEXT://{{ .Release.Name }}-cp-kafka-headless:9092
-            - name: DRUID_QUERY_URL
-              value: http://{{ .Release.Name }}-druid-broker:8082
-            - name: DRUID_URL
-              value: http://{{ .Release.Name }}-druid-coordinator:8081
-            - name: "DRUID_TASK_DURATION"
-              value: {{ .Values.druid.taskDuration}}
-            - name: "DRUID_COMPLETION_TIMEOUT"
-              value: {{ .Values.druid.completionTimeout }}
+            - name: "JOB_QUEUE_TOPIC"
+              value: {{ .Values.kafka.jobqueuetopic }}
             - name: server.servlet.context-path
               value: {{ .Values.springContextPath }}
-
           volumeMounts:
             - name: data
               mountPath: /data

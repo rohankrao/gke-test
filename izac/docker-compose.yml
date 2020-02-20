@@ -1,9 +1,0 @@
-version: '2'
-services:
-  izacclient:
-      container_name: izacclient
-      image: prohankumar/izacclient
-      ports:
-        - 80:3000
-
-  
