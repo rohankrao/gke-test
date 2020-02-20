@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/jobserver
-  tag: 0.01
+  tag: 0.02
   pullPolicy: IfNotPresent
 
 
@@ -104,7 +104,7 @@ service:
   ## If service.type is not set to NodePort, the following statement
   ## will be ignored.
   ##
-  nodePort: 32071
+  nodePort: 32077
 
   ## Service type can be set to ClusterIP, NodePort or LoadBalancer.
   ##

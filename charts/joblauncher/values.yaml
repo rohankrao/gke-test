@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/joblauncher
-  tag: 0.01
+  tag: 0.02
   pullPolicy: IfNotPresent
 
 kafka:
