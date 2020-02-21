@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/joblauncher
-  tag: 0.08
+  tag: 0.09
   pullPolicy: IfNotPresent
 
 kafka:
@@ -14,7 +14,7 @@ kafka:
   profilejobqueuetopic: profilejobqueue
 
 
-profileimagewithtag: prohankumar/profilekafkastreams:0.02
+profileimagewithtag: prohankumar/profilekafkastreams:0.03
 
 imagePullSecrets: []
 nameOverride: ""
