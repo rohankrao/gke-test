@@ -6,12 +6,12 @@ replicaCount: 1
 
 image:
   repository: prohankumar/jobserver
-  tag: 0.02
+  tag: 0.03
   pullPolicy: IfNotPresent
 
 
 kafka:
-  jobqueuetopic: jobqueue
+  profilejobqueuetopic: jobqueue
 
 
 springContextPath: "/jobserver"

@@ -6,16 +6,15 @@ replicaCount: 1
 
 image:
   repository: prohankumar/joblauncher
-  tag: 0.02
+  tag: 0.04
   pullPolicy: IfNotPresent
 
 kafka:
   consumergroupid: joblauncher
-  jobqueuetopic: jobqueue
-  offsetConsumerGroupID: consumer-offset
-  numberOfRecordsToCommit: 5
+  profilejobqueuetopic: profilejobqueue
 
-profileimagewithtag: prohankumar/profilekafkastreams:0.01
+
+profileimagewithtag: prohankumar/profilekafkastreams:0.02
 
 imagePullSecrets: []
 nameOverride: ""

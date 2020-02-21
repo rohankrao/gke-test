@@ -52,10 +52,10 @@ spec:
             {{- end }}
             - name: "BOOTSTRAP_SERVERS"
               value: PLAINTEXT://{{ .Release.Name }}-cp-kafka-headless:9092
-            - name: "METADATA_MAX_AGE_MS"
-              value: {{ .Values.kafka.metadataMaxAgeMs | quote}}
-            - name: "JOB_QUEUE_TOPIC"
-              value: {{ .Values.kafka.jobqueuetopic }}
+            - name: "SCHEMA_REGISTRY_URL"
+              value: http://{{ .Release.Name }}-cp-schema-registry:8081
+            - name: "PROFILE_JOB_QUEUE_TOPIC"
+              value: {{ .Values.kafka.profilejobqueuetopic }}
             - name: server.servlet.context-path
               value: {{ .Values.springContextPath }}
           volumeMounts:
