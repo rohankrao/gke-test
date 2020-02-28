@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/jobserver
-  tag: 0.08
+  tag: 0.10
   pullPolicy: IfNotPresent
 
 

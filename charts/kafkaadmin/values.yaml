@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: prohankumar/kafkaadmin
-  tag: 0.02
+  tag: 0.03
   pullPolicy: IfNotPresent
 
 kafka:

@@ -118,91 +118,12 @@ consumeroffsetmonitoring:
     offsetConsumerGroupID: consumer-offset
     numberOfRecordsToCommit: 5
 
-druid:
-  image:
-    repository: apache/incubator-druid
-    tag: 0.16.1-incubating
-  env:
-    druid.coordinator.asOverlord.enabled: true
-    DRUID_USE_CONTAINER_IP: true
-    # druid_zk_service_host: izac-cp-zookeeper-headless:2181
-    # # druid_metadata_storage_host: ""
-    # druid_metadata_storage_type: postgresql
-    # druid_metadata_storage_connector_connectURI: jdbc:postgresql://izac-postgresql-headless:5432/druid
-    # druid_metadata_storage_connector_user: druid
-    # druid_metadata_storage_connector_password: FoolishPassword
-
-
-    # DRUID_XMX: 1g
-    # DRUID_XMS: 1g
-    # DRUID_MAXNEWSIZE: 250m
-    # DRUID_NEWSIZE: 250m
-    # DRUID_MAXDIRECTMEMORYSIZE: 6172m
-
-    # druid_emitter_logging_logLevel: debug
-
-    # druid_coordinator_balancer_strategy: cachingCost
-
-    # druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 268435456
-
-  
-  broker:
-    name: broker
-    replicaCount: 1
-    serviceType: ClusterIP
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "4Gi"
-      #storageClass: "standard"
-
-  coordinator:
-    name: coordinator
-    replicaCount: 1
-    serviceType: ClusterIP
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "30Gi"
-      #storageClass: "standard"
-
-  historical:
-    name: historical
-    replicaCount: 1
-    serviceType: ClusterIP
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "4Gi"
-      #storageClass: "standard"
-
-  middleManager:
-    name: middle-manager
-    replicaCount: 1
-    serviceType: ClusterIP
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "10Gi"
-      #storageClass: "standard"
-
-  router:
-    name: router
-    replicaCount: 1
-    serviceType: NodePort
-    nodePort: 30888
-    persistence:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: "4Gi"
-      #storageClass: "standard"
-
 
 eventview:
   enabled: true
   image:
     repository: prohankumar/eventview
-    tag: 0.02
+    tag: 0.06
   redis:
     port: 6379
     password: redis_pass
@@ -222,7 +143,7 @@ kafkaadmin:
   enabled: true
   image:
     repository: prohankumar/kafkaadmin
-    tag: 0.02
+    tag: 0.03
   kafka:
     kafkaConsumerGroupIDAdmin: kafkaAdmin
   druid:
@@ -246,78 +167,41 @@ metadata:
     nodePort: 32072
     type: NodePort
 
-timebucket:
-  enabled: true
+
+
+
+joblauncher:
+  replicaCount: 1
   image:
-    repository: prohankumar/timebucket
-    tag: 0.02
-  redis:
-    port: 6379
-    password: redis_pass
+    repository: prohankumar/joblauncher
+    tag: 0.09
+    pullPolicy: IfNotPresent
   kafka:
-    metadataMaxAgeMs: 300000
-    consumerGroupID: timeBucket
-  service:
-    enabled: true
-    httpPort: 80
-    nodePort: 32071
-    type: NodePort
+    consumergroupid: joblauncher
+    profilejobqueuetopic: profilejobqueue
+  profileimagewithtag: prohankumar/profilekafkastreams:0.04
 
 
-redis:
+
+jobserver:
+  replicaCount: 1
   image:
-    registry: docker.io
-    repository: bitnami/redis
-    tag: 5.0.7-debian-9-r12
-  cluster:
-    enabled: true
-    slaveCount: 2
-  sentinel:
-    enabled: false
-  usePassword: true
-  password: "redis_pass"
-  master:
-    disableCommands:
-    - FLUSHDB
-    - FLUSHALL
-    service:
-      type: NodePort
-      port: 6379
-      nodePort: 30679
-    persistence:
-      enabled: true
-      size: 8Gi
-  slave:
-    service:
-      type: ClusterIP
-      port: 6379
-    port: 6379
-    disableCommands:
-    - FLUSHDB
-    - FLUSHALL
-    persistence:
-      enabled: true
-      size: 8Gi
+    repository: prohankumar/jobserver
+    tag: 0.10
+    pullPolicy: IfNotPresent
+  kafka:
+    profilejobqueuetopic: profilejobqueue
+  springContextPath: "/jobserver"
 
 
-postgresql:
+queryconsumeroffsets:
+  replicaCount: 1
   image:
-    registry: docker.io
-    repository: bitnami/postgresql
-    tag: 11.6.0-debian-9-r0
-  replication:
-    enabled: false
-    user: repl_user
-    password: repl_password
-    slaveReplicas: 1
-  postgresqlPostgresPassword:
-  postgresqlUsername: druid
-  postgresqlPassword: FoolishPassword
-  postgresqlDatabase: druid
-  service:
-    type: NodePort
-    port: 5432
-    nodePort: 32432
-  persistence:
-    enabled: true
-    size: 8Gi
+    repository: prohankumar/queryconsumeroffsets
+    tag: 0.02
+    pullPolicy: IfNotPresent
+  kafka:
+    OFFSET_CONSUMER_GROUP_ID: consumer-offset3
+    CONSUMER_OFFSETS_OUTPUT_TOPIC: consumerOffsetsTest3
+    AUTO_OFFSET_RESET_CONFIG: earliest
+  springContextPath: "/queryconsumeroffsets"

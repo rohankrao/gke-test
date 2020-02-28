@@ -7,7 +7,6 @@
 kubectl -n kube-system create serviceaccount tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account tiller
-kubectl create clusterrolebinding joblauncher-binding --clusterrole=admin --serviceaccount default:izac-joblauncher
 ```
 
 ## Install IZAC helm charts
@@ -21,6 +20,9 @@ kubectl get pods
 
 # To get services
 kubectl get svc
+
+# To give access to joblauncher
+kubectl create clusterrolebinding joblauncher-binding --clusterrole=admin --serviceaccount default:izac-joblauncher
 ```
 
 
