@@ -200,7 +200,7 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.11
+    tag: 0.12
     pullPolicy: IfNotPresent
   kafka:
     profilejobqueuetopic: profilejobqueue
