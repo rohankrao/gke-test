@@ -179,7 +179,20 @@ joblauncher:
   kafka:
     consumergroupid: joblauncher
     profilejobqueuetopic: profilejobqueue
-  profileimagewithtag: prohankumar/profilekafkastreams:0.04
+  profileimagewithtag: prohankumar/profilekafkastreams:0.05
+
+
+joblauncherspark:
+  replicaCount: 1
+  image:
+    repository: prohankumar/joblauncherspark
+    tag: 0.01
+    pullPolicy: IfNotPresent
+  kafka:
+    consumergroupid: joblauncherspark
+    sparkflowjobqueuetopic: joblauncherspark
+  sparkflowimagewithtag: ilanosortap/izac:latest
+  SPARK_FLOW_MAIN_APPLICATION_FILE: "local:///opt/spark/examples/jars/izac-distribution-assembly-1.4-Alpha2.jar"
 
 
 
@@ -187,10 +200,11 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.10
+    tag: 0.11
     pullPolicy: IfNotPresent
   kafka:
     profilejobqueuetopic: profilejobqueue
+    SPARK_FLOW_JOB_QUEUE_TOPIC: joblauncherspark
   springContextPath: "/jobserver"
 
 
@@ -198,7 +212,7 @@ queryconsumeroffsets:
   replicaCount: 1
   image:
     repository: prohankumar/queryconsumeroffsets
-    tag: 0.02
+    tag: 0.04
     pullPolicy: IfNotPresent
   kafka:
     OFFSET_CONSUMER_GROUP_ID: consumer-offset3

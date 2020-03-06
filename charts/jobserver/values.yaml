@@ -6,13 +6,13 @@ replicaCount: 1
 
 image:
   repository: prohankumar/jobserver
-  tag: 0.10
+  tag: 0.11
   pullPolicy: IfNotPresent
 
 
 kafka:
   profilejobqueuetopic: profilejobqueue
-
+  SPARK_FLOW_JOB_QUEUE_TOPIC: joblauncherspark
 
 springContextPath: "/jobserver"
 

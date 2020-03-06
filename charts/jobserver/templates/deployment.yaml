@@ -56,6 +56,8 @@ spec:
               value: http://{{ .Release.Name }}-cp-schema-registry:8081
             - name: "PROFILE_JOB_QUEUE_TOPIC"
               value: {{ .Values.kafka.profilejobqueuetopic }}
+            - name: "SPARK_FLOW_JOB_QUEUE_TOPIC"
+              value: {{ .Values.kafka.SPARK_FLOW_JOB_QUEUE_TOPIC }}
             - name: server.servlet.context-path
               value: {{ .Values.springContextPath }}
           volumeMounts:

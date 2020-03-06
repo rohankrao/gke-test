@@ -5,16 +5,17 @@
 replicaCount: 1
 
 image:
-  repository: prohankumar/joblauncher
-  tag: 0.09
+  repository: prohankumar/joblauncherspark
+  tag: 0.01
   pullPolicy: IfNotPresent
 
 kafka:
-  consumergroupid: joblauncher
-  profilejobqueuetopic: profilejobqueue
+  consumergroupid: joblauncherspark
+  sparkflowjobqueuetopic: joblauncherspark
 
 
-profileimagewithtag: prohankumar/profilekafkastreams:0.05
+sparkflowimagewithtag: ilanosortap/izac:latest
+SPARK_FLOW_MAIN_APPLICATION_FILE: "local:///opt/spark/examples/jars/izac-distribution-assembly-1.4-Alpha2.jar"
 
 imagePullSecrets: []
 nameOverride: ""
