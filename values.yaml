@@ -179,7 +179,7 @@ joblauncher:
   kafka:
     consumergroupid: joblauncher
     profilejobqueuetopic: profilejobqueue
-  profileimagewithtag: prohankumar/profilekafkastreams:0.06
+  profileimagewithtag: prohankumar/profilekafkastreams:0.07
 
 
 joblauncherspark:
@@ -200,7 +200,7 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.17
+    tag: 0.18
     pullPolicy: IfNotPresent
   kafka:
     profilejobqueuetopic: profilejobqueue
