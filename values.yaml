@@ -3,7 +3,7 @@
 ## ------------------------------------------------------
 cp-zookeeper:
   enabled: true
-  servers: 3
+  servers: 1
   image: confluentinc/cp-zookeeper
   imageTag: 5.3.1
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
@@ -38,7 +38,7 @@ cp-zookeeper:
 ## ------------------------------------------------------
 cp-kafka:
   enabled: true
-  brokers: 3
+  brokers: 1
   image: confluentinc/cp-kafka
   imageTag: 5.3.1
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
@@ -174,19 +174,19 @@ joblauncher:
   replicaCount: 1
   image:
     repository: prohankumar/joblauncher
-    tag: 0.09
+    tag: 0.1
     pullPolicy: IfNotPresent
   kafka:
     consumergroupid: joblauncher
     profilejobqueuetopic: profilejobqueue
-  profileimagewithtag: prohankumar/profilekafkastreams:0.05
+  profileimagewithtag: prohankumar/profilekafkastreams:0.06
 
 
 joblauncherspark:
   replicaCount: 1
   image:
     repository: prohankumar/joblauncherspark
-    tag: 0.01
+    tag: 0.02
     pullPolicy: IfNotPresent
   kafka:
     consumergroupid: joblauncherspark
@@ -200,7 +200,7 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.12
+    tag: 0.17
     pullPolicy: IfNotPresent
   kafka:
     profilejobqueuetopic: profilejobqueue
