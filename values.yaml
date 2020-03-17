@@ -123,7 +123,7 @@ eventview:
   enabled: true
   image:
     repository: prohankumar/eventview
-    tag: 0.06
+    tag: 0.08
   redis:
     port: 6379
     password: redis_pass
@@ -179,7 +179,7 @@ joblauncher:
   kafka:
     consumergroupid: joblauncher
     profilejobqueuetopic: profilejobqueue
-  profileimagewithtag: prohankumar/profilekafkastreams:0.07
+  profileimagewithtag: prohankumar/profilekafkastreams:0.08
 
 
 joblauncherspark:
@@ -200,7 +200,7 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.18
+    tag: 0.25
     pullPolicy: IfNotPresent
   kafka:
     profilejobqueuetopic: profilejobqueue
@@ -212,7 +212,7 @@ queryconsumeroffsets:
   replicaCount: 1
   image:
     repository: prohankumar/queryconsumeroffsets
-    tag: 0.04
+    tag: 0.05
     pullPolicy: IfNotPresent
   kafka:
     OFFSET_CONSUMER_GROUP_ID: consumer-offset3
