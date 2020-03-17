@@ -90,12 +90,12 @@ livenessProbe:
    port: 8080
  initialDelaySeconds: 300
  periodSeconds: 10
-readinessProbe:
- httpGet:
-   path: /actuator/health
-   port: 8080
- initialDelaySeconds: 60
- periodSeconds: 10
+readinessProbe: {}
+ # httpGet:
+ #   path: /actuator/health
+ #   port: 8080
+ # initialDelaySeconds: 60
+ # periodSeconds: 10
 
 nodeSelector: {}
 
