@@ -1,5 +1,5 @@
 dependencies:
-- name: cp-zookeeper
-  version: 0.1.0
-  repository: file://../cp-zookeeper
-  condition: cp-zookeeper.enabled
+- name: zookeeper
+  version: 2.1.0
+  repository: https://kubernetes-charts-incubator.storage.googleapis.com/
+  condition: kafka.zookeeper.enabled,zookeeper.enabled

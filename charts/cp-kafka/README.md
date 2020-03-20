@@ -1,209 +1,432 @@
-# CP-Kafka Helm Chart
+# Apache Kafka Helm Chart
 
-This chart bootstraps a cluster of Confluent Kafka
+This is an implementation of Kafka StatefulSet found here:
 
-## Prerequisites
+ * https://github.com/Yolean/kubernetes-kafka
 
-* Kubernetes 1.9.2+
-* Helm 2.8.2+
+## Pre Requisites:
 
-## Developing Environment:
+* Kubernetes 1.3 with alpha APIs enabled and support for storage classes
 
-* [Pivotal Container Service (PKS)](https://pivotal.io/platform/pivotal-container-service)
-* [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/)
+* PV support on underlying infrastructure
 
-## Docker Image Source
+* Requires at least `v2.0.0-beta.1` version of helm to support
+  dependency management with requirements.yaml
 
-* [DockerHub -> ConfluentInc](https://hub.docker.com/u/confluentinc/)
+## StatefulSet Details
 
-## Installing the Chart
+* https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
 
-### Install along with cp-helm-charts
+## StatefulSet Caveats
 
-```console
-git clone https://github.com/confluentinc/cp-helm-charts.git
-helm install cp-helm-charts
+* https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
+
+## Chart Details
+
+This chart will do the following:
+
+* Implement a dynamically scalable kafka cluster using Kubernetes StatefulSets
+
+* Implement a dynamically scalable zookeeper cluster as another Kubernetes StatefulSet required for the Kafka cluster above
+
+* Expose Kafka protocol endpoints via NodePort services (optional)
+
+### Installing the Chart
+
+To install the chart with the release name `my-kafka` in the default
+namespace:
+
+```
+$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+$ helm install --name my-kafka incubator/kafka
 ```
 
-To install with a specific name, you can do:
-```console
-helm install --name my-confluent cp-helm-charts
+If using a dedicated namespace(recommended) then make sure the namespace
+exists with:
+
+```
+$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+$ kubectl create ns kafka
+$ helm install --name my-kafka --namespace kafka incubator/kafka
 ```
 
-### Install with a existing cp-zookeeper
+This chart includes a ZooKeeper chart as a dependency to the Kafka
+cluster in its `requirement.yaml` by default. The chart can be customized using the
+following configurable parameters:
 
-```console
-helm install --set cp-zookeeper.enabled=false,cp-zookeeper.url="unhinged-robin-cp-zookeeper-headless:2181" cp-helm-charts/charts/cp-kafka
+| Parameter                                      | Description                                                                                                                                                              | Default                                                            |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `image`                                               | Kafka Container image name                                                                                                                                               | `confluentinc/cp-kafka`                                            |
+| `imageTag`                                            | Kafka Container image tag                                                                                                                                                | `5.0.1`                                                            |
+| `imagePullPolicy`                                     | Kafka Container pull policy                                                                                                                                              | `IfNotPresent`                                                     |
+| `replicas`                                            | Kafka Brokers                                                                                                                                                            | `3`                                                                |
+| `component`                                           | Kafka k8s selector key                                                                                                                                                   | `kafka`                                                            |
+| `resources`                                           | Kafka resource requests and limits                                                                                                                                       | `{}`                                                               |
+| `securityContext`                                     | Kafka containers security context                                                                                                                                        | `{}`                                                               |
+| `kafkaHeapOptions`                                    | Kafka broker JVM heap options                                                                                                                                            | `-Xmx1G-Xms1G`                                                     |
+| `logSubPath`                                          | Subpath under `persistence.mountPath` where kafka logs will be placed.                                                                                                   | `logs`                                                             |
+| `schedulerName`                                       | Name of Kubernetes scheduler (other than the default)                                                                                                                    | `nil`                                                              |
+| `serviceAccountName`                                  | Name of Kubernetes serviceAccount.  Useful when needing to pull images from custom repositories                                                                          | `nil`                                                              |
+| `priorityClassName`                                   | Name of Kubernetes Pod PriorityClass. https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass                                           | `nil`                                                              |
+| `affinity`                                            | Defines affinities and anti-affinities for pods as defined in: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity preferences | `{}`                                                               |
+| `tolerations`                                         | List of node tolerations for the pods. https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/                                                           | `[]`                                                               |
+| `headless.annotations`                                | List of annotations for the headless service. https://kubernetes.io/docs/concepts/services-networking/service/#headless-services                                         | `[]`                                                               |
+| `headless.targetPort`                                 | Target port to be used for the headless service. This is not a required value.                                                                                           | `nil`                                                              |
+| `headless.port`                                       | Port to be used for the headless service. https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/                                                        | `9092`                                                             |
+| `external.enabled`                                    | If True, exposes Kafka brokers via NodePort (PLAINTEXT by default)                                                                                                       | `false`                                                            |
+| `external.dns.useInternal`                            | If True, add Annotation for internal DNS service                                                                                                                         | `false`                                                            |
+| `external.dns.useExternal`                            | If True, add Annotation for external DNS service                                                                                                                         | `true`                                                             |
+| `external.servicePort`                                | TCP port configured at external services (one per pod) to relay from NodePort to the external listener port.                                                             | '19092'                                                            |
+| `external.firstListenerPort`                          | TCP port which is added pod index number to arrive at the port used for NodePort and external listener port.                                                             | '31090'                                                            |
+| `external.domain`                                     | Domain in which to advertise Kafka external listeners.                                                                                                                   | `cluster.local`                                                    |
+| `external.type`                                       | Service Type.                                                                                                                                                            | `NodePort`                                                         |
+| `external.distinct`                                   | Distinct DNS entries for each created A record.                                                                                                                          | `false`                                                            |
+| `external.annotations`                                | Additional annotations for the external service.                                                                                                                         | `{}`                                                               |
+| `external.loadBalancerIP`                             | Add Static IP to the type Load Balancer. Depends on the provider if enabled                | `[]`
+| `external.loadBalancerSourceRanges`                   | Add IP ranges that are allowed to access the Load Balancer.                                | `[]`
+| `podAnnotations`                                      | Annotation to be added to Kafka pods                                                                                                                                     | `{}`                                                               |
+| `podLabels`                                           | Labels to be added to Kafka pods                                                                                                                                     | `{}`                                                               |
+| `podDisruptionBudget`                                 | Define a Disruption Budget for the Kafka Pods                                                                                                                                    | `{}`                                                               |
+| `envOverrides`                                        | Add additional Environment Variables in the dictionary format                       | `{ zookeeper.sasl.enabled: "False" }`                              |
+| `configurationOverrides`                              | `Kafka ` [configuration setting][brokerconfigs] overrides in the dictionary format                                                                                       | `{ "confluent.support.metrics.enable": false }`                          |
+| `secrets`                                             | Pass any secrets to the kafka pods. Each secret will be passed as an environment variable by default. The secret can also be mounted to a specific path if required. Environment variable names are generated as: `<secretName>_<secretKey>` (All upper case) | `{}` |
+| `additionalPorts`                                     | Additional ports to expose on brokers.  Useful when the image exposes metrics (like prometheus, etc.) through a javaagent instead of a sidecar                           | `{}`                                                               |
+| `readinessProbe.initialDelaySeconds`                  | Number of seconds before probe is initiated.                                                                                                                             | `30`                                                               |
+| `readinessProbe.periodSeconds`                        | How often (in seconds) to perform the probe.                                                                                                                             | `10`                                                               |
+| `readinessProbe.timeoutSeconds`                       | Number of seconds after which the probe times out.                                                                                                                       | `5`                                                                |
+| `readinessProbe.successThreshold`                     | Minimum consecutive successes for the probe to be considered successful after having failed.                                                                             | `1`                                                                |
+| `readinessProbe.failureThreshold`                     | After the probe fails this many times, pod will be marked Unready.                                                                                                       | `3`                                                                |
+| `terminationGracePeriodSeconds`                       | Wait up to this many seconds for a broker to shut down gracefully, after which it is killed                                                                              | `60`                                                               |
+| `updateStrategy`                                      | StatefulSet update strategy to use.                                                                                                                                      | `{ type: "OnDelete" }`                                             |
+| `podManagementPolicy`                                 | Start and stop pods in Parallel or OrderedReady (one-by-one.)  Can not change after first release.                                                                       | `OrderedReady`                                                     |
+| `persistence.enabled`                                 | Use a PVC to persist data                                                                                                                                                | `true`                                                             |
+| `persistence.size`                                    | Size of data volume                                                                                                                                                      | `1Gi`                                                              |
+| `persistence.mountPath`                               | Mount path of data volume                                                                                                                                                | `/opt/kafka/data`                                                  |
+| `persistence.storageClass`                            | Storage class of backing PVC                                                                                                                                             | `nil`                                                              |
+| `jmx.configMap.enabled`                               | Enable the default ConfigMap for JMX                                                                                                                                     | `true`                                                             |
+| `jmx.configMap.overrideConfig`                        | Allows config file to be generated by passing values to ConfigMap                                                                                                        | `{}`                                                               |
+| `jmx.configMap.overrideName`                          | Allows setting the name of the ConfigMap to be used                                                                                                                      | `""`                                                               |
+| `jmx.port`                                            | The jmx port which JMX style metrics are exposed (note: these are not scrapeable by Prometheus)                                                                          | `5555`                                                             |
+| `jmx.whitelistObjectNames`                            | Allows setting which JMX objects you want to expose to via JMX stats to JMX Exporter                                                                                     | (see `values.yaml`)                                                |
+| `nodeSelector`                                        | Node labels for pod assignment                                                                                                                                           | `{}`                                                               |
+| `prometheus.jmx.resources`                            | Allows setting resource limits for jmx sidecar container                                                                                                                 | `{}`                                                               |
+| `prometheus.jmx.enabled`                              | Whether or not to expose JMX metrics to Prometheus                                                                                                                       | `false`                                                            |
+| `prometheus.jmx.image`                                | JMX Exporter container image                                                                                                                                             | `solsson/kafka-prometheus-jmx-exporter@sha256`                     |
+| `prometheus.jmx.imageTag`                             | JMX Exporter container image tag                                                                                                                                         | `a23062396cd5af1acdf76512632c20ea6be76885dfc20cd9ff40fb23846557e8` |
+| `prometheus.jmx.interval`                             | Interval that Prometheus scrapes JMX metrics when using Prometheus Operator                                                                                              | `10s`                                                              |
+| `prometheus.jmx.scrapeTimeout`                        | Timeout that Prometheus scrapes JMX metrics when using Prometheus Operator                                                                                              | `10s`                                                              |
+| `prometheus.jmx.port`                                 | JMX Exporter Port which exposes metrics in Prometheus format for scraping                                                                                                | `5556`                                                             |
+| `prometheus.kafka.enabled`                            | Whether or not to create a separate Kafka exporter                                                                                                                       | `false`                                                            |
+| `prometheus.kafka.image`                              | Kafka Exporter container image                                                                                                                                           | `danielqsj/kafka-exporter`                                         |
+| `prometheus.kafka.imageTag`                           | Kafka Exporter container image tag                                                                                                                                       | `v1.2.0`                                                           |
+| `prometheus.kafka.interval`                           | Interval that Prometheus scrapes Kafka metrics when using Prometheus Operator                                                                                            | `10s`                                                              |
+| `prometheus.kafka.scrapeTimeout`                      | Timeout that Prometheus scrapes Kafka metrics when using Prometheus Operator                                                                                            | `10s`                                                              |
+| `prometheus.kafka.port`                               | Kafka Exporter Port which exposes metrics in Prometheus format for scraping                                                                                              | `9308`                                                             |
+| `prometheus.kafka.resources`                          | Allows setting resource limits for kafka-exporter pod                                                                                                                    | `{}`                                                               |
+| `prometheus.kafka.affinity`                           | Defines affinities and anti-affinities for pods as defined in: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity preferences | `{}`                                                               |
+| `prometheus.kafka.tolerations`                        | List of node tolerations for the pods. https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/                                                           | `[]`                                                               |
+| `prometheus.operator.enabled`                         | True if using the Prometheus Operator, False if not                                                                                                                      | `false`                                                            |
+| `prometheus.operator.serviceMonitor.namespace`        | Namespace in which to install the ServiceMonitor resource. Default to kube-prometheus install.                                                                           | `monitoring`                                                       |
+| `prometheus.operator.serviceMonitor.releaseNamespace` | Set namespace to release namespace. Default false                                                                                                                        | `false`                                                            |
+| `prometheus.operator.serviceMonitor.selector`         | Default to kube-prometheus install (CoreOS recommended), but should be set according to Prometheus install                                                               | `{ prometheus: kube-prometheus }`                                  |
+| `prometheus.operator.prometheusRule.enabled`          | True to create a PrometheusRule resource for Prometheus Operator, False if not                                                                                           | `false`                                                            |
+| `prometheus.operator.prometheusRule.namespace`        | Namespace in which to install the PrometheusRule resource. Default to kube-prometheus install.                                                                           | `monitoring`                                                       |
+| `prometheus.operator.prometheusRule.releaseNamespace` | Set namespace to release namespace. Default false                                                                                                                        | `false`                                                            |
+| `prometheus.operator.prometheusRule.selector`         | Default to kube-prometheus install (CoreOS recommended), but should be set according to Prometheus install                                                               | `{ prometheus: kube-prometheus }`                                  |
+| `prometheus.operator.prometheusRule.rules`            | Define the prometheus rules. See values file for examples                                                                                                                | `{}`                                                               |
+| `configJob.backoffLimit`                              | Number of retries before considering kafka-config job as failed                                                                                                          | `6`                                                                |
+| `topics`                                              | List of topics to create & configure. Can specify name, partitions, replicationFactor, reassignPartitions, config. See values.yaml                                       | `[]` (Empty list)                                                  |
+| `zookeeper.enabled`                                   | If True, installs Zookeeper Chart                                                                                                                                        | `true`                                                             |
+| `zookeeper.resources`                                 | Zookeeper resource requests and limits                                                                                                                                   | `{}`                                                               |
+| `zookeeper.env`                                       | Environmental variables provided to Zookeeper Zookeeper                                                                                                                  | `{ZK_HEAP_SIZE: "1G"}`                                             |
+| `zookeeper.storage`                                   | Zookeeper Persistent volume size                                                                                                                                         | `2Gi`                                                              |
+| `zookeeper.image.PullPolicy`                          | Zookeeper Container pull policy                                                                                                                                          | `IfNotPresent`                                                     |
+| `zookeeper.url`                                       | URL of Zookeeper Cluster (unneeded if installing Zookeeper Chart)                                                                                                        | `""`                                                               |
+| `zookeeper.port`                                      | Port of Zookeeper Cluster                                                                                                                                                | `2181`                                                             |
+| `zookeeper.affinity`                                  | Defines affinities and anti-affinities for pods as defined in: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity preferences | `{}`                                                               |
+| `zookeeper.nodeSelector`                              | Node labels for pod assignment                                                                                                                                           | `{}`                                                               |
+
+Specify parameters using `--set key=value[,key=value]` argument to `helm install`
+
+Alternatively a YAML file that specifies the values for the parameters can be provided like this:
+
+```bash
+$ helm install --name my-kafka -f values.yaml incubator/kafka
 ```
 
-### Installed Components
+### Connecting to Kafka from inside Kubernetes
 
-You can use `helm status <release name>` to view all of the installed components.
+You can connect to Kafka by running a simple pod in the K8s cluster like this with a configuration like this:
 
-For example:
-
-```console
-$ helm status garish-cat
-NAMESPACE: default
-STATUS: DEPLOYED
-
-RESOURCES:
-==> v1/ConfigMap
-NAME                                   DATA  AGE
-boiling-heron-zookeeper-jmx-configmap  1     5m
-boiling-heron-cp-kafka-jmx-configmap   1     5m
-
-==> v1/Service
-NAME                              TYPE       CLUSTER-IP     EXTERNAL-IP  PORT(S)            AGE
-boiling-heron-zookeeper-headless  ClusterIP  None           <none>       2888/TCP,3888/TCP  5m
-boiling-heron-zookeeper           ClusterIP  10.19.244.17   <none>       2181/TCP           5m
-boiling-heron-0-external          NodePort   10.19.240.13   <none>       19092:31090/TCP    5m
-boiling-heron-1-external          NodePort   10.19.243.241  <none>       19092:31091/TCP    5m
-boiling-heron-2-external          NodePort   10.19.248.189  <none>       19092:31092/TCP    5m
-boiling-heron-cp-kafka-headless   ClusterIP  None           <none>       9092/TCP           5m
-boiling-heron-cp-kafka            ClusterIP  10.19.254.252  <none>       9092/TCP           5m
-
-==> v1beta1/StatefulSet
-NAME                     DESIRED  CURRENT  AGE
-boiling-heron-zookeeper  3        3        5m
-boiling-heron-cp-kafka   3        3        5m
-
-==> v1beta1/PodDisruptionBudget
-NAME                         MIN AVAILABLE  MAX UNAVAILABLE  ALLOWED DISRUPTIONS  AGE
-boiling-heron-zookeeper-pdb  N/A            1                1                    5m
-
-==> v1/Pod(related)
-NAME                       READY  STATUS   RESTARTS  AGE
-boiling-heron-zookeeper-0  2/2    Running  0         5m
-boiling-heron-zookeeper-1  2/2    Running  0         5m
-boiling-heron-zookeeper-2  2/2    Running  0         5m
-boiling-heron-cp-kafka-0   2/2    Running  0         5m
-boiling-heron-cp-kafka-1   2/2    Running  0         5m
-boiling-heron-cp-kafka-2   2/2    Running  0         5m
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testclient
+  namespace: kafka
+spec:
+  containers:
+  - name: kafka
+    image: solsson/kafka:0.11.0.0
+    command:
+      - sh
+      - -c
+      - "exec tail -f /dev/null"
 ```
 
-There are
-1. A [Confluent Zookeeper Ensemble](https://github.com/confluentinc/cp-helm-charts/tree/master/charts/cp-zookeeper) created by cp-zookeeper chart.
-1. A [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) `boiling-heron-cp-kafka` which contains 3 Kafka [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/): `boiling-heron-cp-kafka-<0|1|2>`. Each Pod has a container running a Kafka Broker and an optional sidecar JMX Exporter Container.
-1. A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) `boiling-heron-cp-kafka` for clients to connect to Kafka.
-1. A [Headless Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) `boiling-heron-cp-kafka-headless` to control the network domain for the Kafka processes.
-1. A group(N = number of brokers) of [NodePort Service](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) `boiling-heron-cp-kafka-${i}-external` to allow access to Kafka Cluster from outside.
-1. A [ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/) which contains configuration for Prometheus JMX Exporter.
+Once you have the testclient pod above running, you can list all kafka
+topics with:
 
-## Configuration
+` kubectl -n kafka exec -ti testclient -- ./bin/kafka-topics.sh --zookeeper
+my-release-zookeeper:2181 --list`
 
-You can specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+Where `my-release` is the name of your helm release.
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+## Extensions
 
-```console
-helm install --name my-kafka -f my-values.yaml ./cp-kafka
+Kafka has a rich ecosystem, with lots of tools. This sections is intended to compile all of those tools for which a corresponding Helm chart has already been created.
+
+- [Schema-registry](https://github.com/kubernetes/charts/tree/master/incubator/schema-registry) -  A confluent project that provides a serving layer for your metadata. It provides a RESTful interface for storing and retrieving Avro schemas.
+
+## Connecting to Kafka from outside Kubernetes
+
+### NodePort External Service Type
+
+Review and optionally override to enable the example text concerned with external access in `values.yaml`.
+
+Once configured, you should be able to reach Kafka via NodePorts, one per replica. In kops where private,
+topology is enabled, this feature publishes an internal round-robin DNS record using the following naming
+scheme. The external access feature of this chart was tested with kops on AWS using flannel networking.
+If you wish to enable external access to Kafka running in kops, your security groups will likely need to
+be adjusted to allow non-Kubernetes nodes (e.g. bastion) to access the Kafka external listener port range.
+
+```
+{{ .Release.Name }}.{{ .Values.external.domain }}
 ```
 
-> **Tip**: A default [values.yaml](values.yaml) is provided
+If `external.distinct` is set theses entries will be prefixed with the replica number or broker id.
 
-### Kafka Cluster
+```
+{{ .Release.Name }}-<BROKER_ID>.{{ .Values.external.domain }}
+```
 
-The configuration parameters in this section control the resources requested and utilized by the cp-kafka chart.
+Port numbers for external access used at container and NodePort are unique to each container in the StatefulSet.
+Using the default `external.firstListenerPort` number with a `replicas` value of `3`, the following
+container and NodePorts will be opened for external access: `31090`, `31091`, `31092`. All of these ports should
+be reachable from any host to NodePorts are exposed because Kubernetes routes each NodePort from entry node
+to pod/container listening on the same port (e.g. `31091`).
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `brokers` | The number of Broker servers. | `3` |
+The `external.servicePort` at each external access service (one such service per pod) is a relay toward
+the a `containerPort` with a number matching its respective `NodePort`. The range of NodePorts is set, but
+should not actually listen, on all Kafka pods in the StatefulSet. As any given pod will listen only one
+such port at a time, setting the range at every Kafka pod is a reasonably safe configuration.
 
-### Image
+#### Example values.yml for external service type NodePort
+The + lines are with the updated values.
+```
+ external:
+-  enabled: false
++  enabled: true
+   # type can be either NodePort or LoadBalancer
+   type: NodePort
+   # annotations:
+@@ -170,14 +170,14 @@ configurationOverrides:
+   ##
+   ## Setting "advertised.listeners" here appends to "PLAINTEXT://${POD_IP}:9092,", ensure you update the domain
+   ## If external service type is Nodeport:
+-  # "advertised.listeners": |-
+-  #   EXTERNAL://kafka.cluster.local:$((31090 + ${KAFKA_BROKER_ID}))
++  "advertised.listeners": |-
++    EXTERNAL://kafka.cluster.local:$((31090 + ${KAFKA_BROKER_ID}))
+   ## If external service type is LoadBalancer and distinct is true:
+   # "advertised.listeners": |-
+   #   EXTERNAL://kafka-$((${KAFKA_BROKER_ID})).cluster.local:19092
+   ## If external service type is LoadBalancer and distinct is false:
+   # "advertised.listeners": |-
+   #   EXTERNAL://EXTERNAL://${LOAD_BALANCER_IP}:31090
+   ## Uncomment to define the EXTERNAL Listener protocol
+-  # "listener.security.protocol.map": |-
+-  #   PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
++  "listener.security.protocol.map": |-
++    PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `image` | Docker Image of Confluent Kafka. | `confluentinc/cp-kafka` |
-| `imageTag` | Docker Image Tag of Confluent Kafka. | `5.3.1` |
-| `imagePullPolicy` | Docker Image Tag of Confluent Kafka. | `IfNotPresent` |
-| `imagePullSecrets` | Secrets to be used for private registries. | see [values.yaml](values.yaml) for details |
 
-### StatefulSet Configurations
+$ kafkacat -b kafka.cluster.local:31090 -L
+Metadata for all topics (from broker 0: kafka.cluster.local:31090/0):
+ 3 brokers:
+  broker 2 at kafka.cluster.local:31092
+  broker 1 at kafka.cluster.local:31091
+  broker 0 at kafka.cluster.local:31090
+ 0 topics:
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `podManagementPolicy` | The Kafka StatefulSet Pod Management Policy: `Parallel` or `OrderedReady`. | `OrderedReady` |
-| `updateStrategy` | The Kafka StatefulSet update strategy: `RollingUpdate` or `OnDelete`. | `RollingUpdate` |
+$ kafkacat -b kafka.cluster.local:31090 -P -t test1 -p 0
+msg01 from external producer to topic test1
 
-### Confluent Kafka Configuration
+$ kafkacat -b kafka.cluster.local:31090 -C -t test1 -p 0
+msg01 from external producer to topic test1
+```
+### LoadBalancer External Service Type
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `configurationOverrides` | Kafka [configuration](https://kafka.apache.org/documentation/#brokerconfigs) overrides in the dictionary format | `{}` |
-| `customEnv` | Custom environmental variables | `{}` |
+The load balancer external service type differs from the node port type by routing to the `external.servicePort` specified in the service for each statefulset container (if `external.distinct` is set). If `external.distinct` is false, `external.servicePort` is unused and will be set to the sum of `external.firstListenerPort` and the replica number.  It is important to note that `external.firstListenerPort` does not have to be within the configured node port range for the cluster, however a node port will be allocated.
 
-### Persistence
+#### Example values.yml and DNS setup for external service type LoadBalancer with external.distinct: true
+The + lines are with the updated values.
+```
+ external:
+-  enabled: false
++  enabled: true
+   # type can be either NodePort or LoadBalancer
+-  type: NodePort
++  type: LoadBalancer
+   # annotations:
+   #  service.beta.kubernetes.io/openstack-internal-load-balancer: "true"
+   dns:
+@@ -138,10 +138,10 @@ external:
+   # If using external service type LoadBalancer and external dns, set distinct to true below.
+   # This creates an A record for each statefulset pod/broker. You should then map the
+   # A record of the broker to the EXTERNAL IP given by the LoadBalancer in your DNS server.
+-  distinct: false
++  distinct: true
+   servicePort: 19092
+   firstListenerPort: 31090
+-  domain: cluster.local
++  domain: example.com
+   loadBalancerIP: []
+   init:
+     image: "lwolf/kubectl_deployer"
+@@ -173,11 +173,11 @@ configurationOverrides:
+   # "advertised.listeners": |-
+   #   EXTERNAL://kafka.cluster.local:$((31090 + ${KAFKA_BROKER_ID}))
+   ## If external service type is LoadBalancer and distinct is true:
+-  # "advertised.listeners": |-
+-  #   EXTERNAL://kafka-$((${KAFKA_BROKER_ID})).cluster.local:19092
++  "advertised.listeners": |-
++    EXTERNAL://kafka-$((${KAFKA_BROKER_ID})).example.com:19092
+   ## Uncomment to define the EXTERNAL Listener protocol
+-  # "listener.security.protocol.map": |-
+-  #   PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
++  "listener.security.protocol.map": |-
++    PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `persistence.enabled` | Whether to create a PVC. If `false`, an `emptyDir` on the host will be used. | `true` |
-| `persistence.size` | Size for log dir, where Kafka will store log data. | `5Gi` |
-| `persistence.storageClass` | Valid options: `nil`, `"-"`, or storage class name. | `nil` |
-| `persistence.disksPerBroker` | The amount of disks that will be attached per instance of Kafka broker. | 1 |
+$ kubectl -n kafka get svc
+NAME                       TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                      AGE
+kafka                      ClusterIP      10.39.241.217   <none>           9092/TCP                     2m39s
+kafka-0-external           LoadBalancer   10.39.242.45    35.200.238.174   19092:30108/TCP              2m39s
+kafka-1-external           LoadBalancer   10.39.241.90    35.244.44.162    19092:30582/TCP              2m39s
+kafka-2-external           LoadBalancer   10.39.243.160   35.200.149.80    19092:30539/TCP              2m39s
+kafka-headless             ClusterIP      None            <none>           9092/TCP                     2m39s
+kafka-zookeeper            ClusterIP      10.39.249.70    <none>           2181/TCP                     2m39s
+kafka-zookeeper-headless   ClusterIP      None            <none>           2181/TCP,3888/TCP,2888/TCP   2m39s
 
-### Kafka JVM Heap Options
+DNS A record entries:
+kafka-0.example.com A record 35.200.238.174 TTL 60sec
+kafka-1.example.com A record 35.244.44.162 TTL 60sec
+kafka-2.example.com A record 35.200.149.80 TTL 60sec
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `heapOptions` | The JVM Heap Options for Kafka | `"-Xms512M -Xmx512M"` |
+$ ping kafka-0.example.com
+PING kafka-0.example.com (35.200.238.174): 56 data bytes
 
-### Resources
+$ kafkacat -b kafka-0.example.com:19092 -L
+Metadata for all topics (from broker 0: kafka-0.example.com:19092/0):
+ 3 brokers:
+  broker 2 at kafka-2.example.com:19092
+  broker 1 at kafka-1.example.com:19092
+  broker 0 at kafka-0.example.com:19092
+ 0 topics:
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `resources.requests.cpu` | The amount of CPU to request. | see [values.yaml](values.yaml) for details |
-| `resources.requests.memory` | The amount of memory to request. | see [values.yaml](values.yaml) for details |
-| `resources.limits.cpu` | The upper limit CPU usage for a Kafka Pod. | see [values.yaml](values.yaml) for details |
-| `resources.limits.memory` | The upper limit memory usage for a Kafka Pod. | see [values.yaml](values.yaml) for details |
+$ kafkacat -b kafka-0.example.com:19092 -P -t gkeTest -p 0
+msg02 for topic gkeTest
 
-### Annotations
+$ kafkacat -b kafka-0.example.com:19092 -C -t gkeTest -p 0
+msg02 for topic gkeTest
+```
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `podAnnotations` | Map of custom annotations to attach to the pod spec. | `{}` |
+#### Example values.yml and DNS setup for external service type LoadBalancer with external.distinct: false
+The + lines are with the updated values.
+```
+ external:
+-  enabled: false
++  enabled: true
+   # type can be either NodePort or LoadBalancer
+-  type: NodePort
++  type: LoadBalancer
+   # annotations:
+   #  service.beta.kubernetes.io/openstack-internal-load-balancer: "true"
+   dns:
+@@ -138,10 +138,10 @@ external:
+   distinct: false
+   servicePort: 19092
+   firstListenerPort: 31090
+   domain: cluster.local
+   loadBalancerIP: [35.200.238.174,35.244.44.162,35.200.149.80]
+   init:
+     image: "lwolf/kubectl_deployer"
+@@ -173,11 +173,11 @@ configurationOverrides:
+   # "advertised.listeners": |-
+   #   EXTERNAL://kafka.cluster.local:$((31090 + ${KAFKA_BROKER_ID}))
+   ## If external service type is LoadBalancer and distinct is true:
+-  # "advertised.listeners": |-
+-  #   EXTERNAL://kafka-$((${KAFKA_BROKER_ID})).cluster.local:19092
++  "advertised.listeners": |-
++    EXTERNAL://${LOAD_BALANCER_IP}:31090
+   ## Uncomment to define the EXTERNAL Listener protocol
+-  # "listener.security.protocol.map": |-
+-  #   PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
++  "listener.security.protocol.map": |-
++    PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
 
-### JMX Configuration
+$ kubectl -n kafka get svc
+NAME                       TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                      AGE
+kafka                      ClusterIP      10.39.241.217   <none>           9092/TCP                     2m39s
+kafka-0-external           LoadBalancer   10.39.242.45    35.200.238.174   31090:30108/TCP              2m39s
+kafka-1-external           LoadBalancer   10.39.241.90    35.244.44.162    31090:30582/TCP              2m39s
+kafka-2-external           LoadBalancer   10.39.243.160   35.200.149.80    31090:30539/TCP              2m39s
+kafka-headless             ClusterIP      None            <none>           9092/TCP                     2m39s
+kafka-zookeeper            ClusterIP      10.39.249.70    <none>           2181/TCP                     2m39s
+kafka-zookeeper-headless   ClusterIP      None            <none>           2181/TCP,3888/TCP,2888/TCP   2m39s
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `jmx.port` | The jmx port which JMX style metrics are exposed. | `5555` |
+$ kafkacat -b 35.200.238.174:31090 -L
+Metadata for all topics (from broker 0: 35.200.238.174:31090/0):
+ 3 brokers:
+  broker 2 at 35.200.149.80:31090
+  broker 1 at 35.244.44.162:31090
+  broker 0 at 35.200.238.174:31090
+ 0 topics:
 
-### Prometheus JMX Exporter Configuration
+$ kafkacat -b 35.200.238.174:31090 -P -t gkeTest -p 0
+msg02 for topic gkeTest
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `prometheus.jmx.enabled` | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `true` |
-| `prometheus.jmx.image` | Docker Image for Prometheus JMX Exporter container. | `solsson/kafka-prometheus-jmx-exporter@sha256` |
-| `prometheus.jmx.imageTag` | Docker Image Tag for Prometheus JMX Exporter container. | `6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143` |
-| `prometheus.jmx.imagePullPolicy` | Docker Image Pull Policy for Prometheus JMX Exporter container. | `IfNotPresent` |
-| `prometheus.jmx.port` | JMX Exporter Port which exposes metrics in Prometheus format for scraping. | `5556` |
-| `prometheus.jmx.resources` | JMX Exporter resources configuration. | see [values.yaml](values.yaml) for details |
+$ kafkacat -b 35.200.238.174:31090 -C -t gkeTest -p 0
+msg02 for topic gkeTest
+```
 
-### External Access
+## Known Limitations
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `nodeport.enabled` | Whether or not to allow access to kafka cluster from outside k8s through NodePort. | `false` |
-| `nodeport.servicePort` | The Port broker will advertise to external producers and consumers.  | `19092` |
-| `nodeport.firstListenerPort` | The first NodePort that Kafka Broker will use for advertising to external producers and consumers. For each broker, advertise.listeners port for external will be set to `31090 + {index of broker pod}`. | `31090` |
+* Only supports storage options that have backends for persistent volume claims (tested mostly on AWS)
+* KAFKA_PORT will be created as an envvar and brokers will fail to start when there is a service named `kafka` in the same namespace. We work around this be unsetting that envvar `unset KAFKA_PORT`.
 
-### Deployment Topology
+[brokerconfigs]: https://kafka.apache.org/documentation/#brokerconfigs
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `nodeSelector` | Dictionary containing key-value-pairs to match labels on nodes. When defined pods will only be scheduled on nodes, that have each of the indicated key-value pairs as labels. Further information can be found in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/) | `{}`
-| `tolerations`| Array containing taint references. When defined, pods can run on nodes, which would otherwise deny scheduling. Further information can be found in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/) | `{}`
+## Prometheus Stats
 
-## Dependencies
+### Prometheus vs Prometheus Operator
 
-### Zookeeper
+Standard Prometheus is the default monitoring option for this chart. This chart also supports the CoreOS Prometheus Operator,
+which can provide additional functionality like automatically updating Prometheus and Alert Manager configuration. If you are
+interested in installing the Prometheus Operator please see the [CoreOS repository](https://github.com/coreos/prometheus-operator/tree/master/helm) for more information or
+read through the [CoreOS blog post introducing the Prometheus Operator](https://coreos.com/blog/the-prometheus-operator.html)
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `cp-zookeeper.enabled` | Whether or not to install cp-zookeeper chart alongside cp-kafka chart | `true` |
-| `cp-zookeeper.persistence.enabled` | Whether to create a PVC. If `false`, an `emptyDir` on the host will be used. | `true` |
-| `cp-zookeeper.persistence.dataDirSize` | Size for Data dir, where ZooKeeper will store the in-memory database snapshots. This will overwrite corresponding value in cp-zookeeper chart's value.yaml | `5Gi` |
-| `cp-zookeeper.persistence.dataLogDirSize` | Size for data log dir, which is a dedicated log device to be used, and helps avoid competition between logging and snapshots. This will overwrite corresponding value in cp-zookeeper chart's value.yaml. | `5Gi` |
-| `cp-zookeeper.url` | Service name of Zookeeper cluster (Not needed if zookeeper.enabled is set to true). | `""` |
-| `cp-zookeeper.clientPort` | Port of Zookeeper Cluster | `2181` |
+### JMX Exporter
+
+The majority of Kafka statistics are provided via JMX and are exposed via the [Prometheus JMX Exporter](https://github.com/prometheus/jmx_exporter).
+
+The JMX Exporter is a general purpose prometheus provider which is intended for use with any Java application. Because of this, it produces a number of statistics which
+may not be of interest. To help in reducing these statistics to their relevant components we have created a curated whitelist `whitelistObjectNames` for the JMX exporter.
+This whitelist may be modified or removed via the values configuration.
+
+To accommodate compatibility with the Prometheus metrics, this chart performs transformations of raw JMX metrics. For example, broker names and topics names are incorporated
+into the metric name instead of becoming a label. If you are curious to learn more about any default transformations to the chart metrics, please have reference the [configmap template](https://github.com/kubernetes/charts/blob/master/incubator/kafka/templates/jmx-configmap.yaml).
+
+### Kafka Exporter
+
+The [Kafka Exporter](https://github.com/danielqsj/kafka_exporter) is a complementary metrics exporter to the JMX Exporter. The Kafka Exporter provides additional statistics on Kafka Consumer Groups.
