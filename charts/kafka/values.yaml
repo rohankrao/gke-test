@@ -203,8 +203,8 @@ configurationOverrides:
 ## set extra ENVs
 #   key: "value"
 envOverrides: 
-  KAFKA_MESSAGE_MAX_BYTES: 50485760
-  KAFKA_MAX_PARTITION_FETCH_BYTES: 50485760
+  KAFKA_MESSAGE_MAX_BYTES: "50485760"
+  KAFKA_MAX_PARTITION_FETCH_BYTES: "50485760"
 
 
 ## A collection of additional ports to expose on brokers (formatted as normal containerPort yaml)
