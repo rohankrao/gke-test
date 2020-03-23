@@ -87,7 +87,7 @@ resources: {}
 livenessProbe:
  httpGet:
    path: /actuator/health
-   port: 8080
+   port: 80
  initialDelaySeconds: 300
  periodSeconds: 10
 readinessProbe: {}
