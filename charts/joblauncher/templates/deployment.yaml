@@ -51,7 +51,7 @@ spec:
             - name: PROFILE_APP_IMAGE_WITH_TAG
               value: {{ .Values.profileimagewithtag }}
             - name: FLOW_APP_IMAGE_WITH_TAG
-              value: {{ .Values.profileimagewithtag }}
+              value: {{ .Values.flowimagewithtag }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
