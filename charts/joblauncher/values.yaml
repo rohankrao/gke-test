@@ -11,10 +11,11 @@ image:
 
 kafka:
   consumergroupid: joblauncher
-  profilejobqueuetopic: profilejobqueue
+  jobqueuetopic: jobqueue
 
 
 profileimagewithtag: prohankumar/profilekafkastreams:0.05
+flowimagewithtag: prohankumar/flowkafkastreams:0.01
 
 imagePullSecrets: []
 nameOverride: ""

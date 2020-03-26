@@ -11,7 +11,7 @@ image:
 
 
 kafka:
-  profilejobqueuetopic: profilejobqueue
+  jobqueuetopic: profilejobqueue
   SPARK_FLOW_JOB_QUEUE_TOPIC: joblauncherspark
 
 springContextPath: "/jobserver"

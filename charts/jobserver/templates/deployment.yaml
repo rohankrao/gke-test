@@ -54,8 +54,8 @@ spec:
               value: PLAINTEXT://{{ .Release.Name }}-cp-kafka-headless:9092
             - name: "SCHEMA_REGISTRY_URL"
               value: http://{{ .Release.Name }}-cp-schema-registry:8081
-            - name: "PROFILE_JOB_QUEUE_TOPIC"
-              value: {{ .Values.kafka.profilejobqueuetopic }}
+            - name: "JOB_QUEUE_TOPIC"
+              value: {{ .Values.kafka.jobqueuetopic }}
             - name: "SPARK_FLOW_JOB_QUEUE_TOPIC"
               value: {{ .Values.kafka.SPARK_FLOW_JOB_QUEUE_TOPIC }}
             - name: server.servlet.context-path

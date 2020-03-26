@@ -192,12 +192,13 @@ joblauncher:
   replicaCount: 1
   image:
     repository: prohankumar/joblauncher
-    tag: 0.1
+    tag: 0.11
     pullPolicy: IfNotPresent
   kafka:
     consumergroupid: joblauncher
-    profilejobqueuetopic: profilejobqueue
+    jobqueuetopic: jobqueue
   profileimagewithtag: prohankumar/profilekafkastreams:0.12
+  flowimagewithtag: prohankumar/flowkafkastreams:0.01
 
 
 joblauncherspark:
@@ -218,10 +219,10 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.31
+    tag: 0.33
     pullPolicy: IfNotPresent
   kafka:
-    profilejobqueuetopic: profilejobqueue
+    jobqueuetopic: jobqueue
     SPARK_FLOW_JOB_QUEUE_TOPIC: joblauncherspark
   springContextPath: "/jobserver"
 

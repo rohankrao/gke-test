@@ -46,9 +46,11 @@ spec:
               value: http://{{ .Release.Name }}-cp-schema-registry:8081
             - name: CONSUMER_GROUP_ID
               value: {{ .Values.kafka.consumergroupid }}
-            - name: PROFILE_JOB_QUEUE_TOPIC
-              value: {{ .Values.kafka.profilejobqueuetopic }}
+            - name: JOB_QUEUE_TOPIC
+              value: {{ .Values.kafka.jobqueuetopic }}
             - name: PROFILE_APP_IMAGE_WITH_TAG
+              value: {{ .Values.profileimagewithtag }}
+            - name: FLOW_APP_IMAGE_WITH_TAG
               value: {{ .Values.profileimagewithtag }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
