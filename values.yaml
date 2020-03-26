@@ -141,7 +141,7 @@ eventview:
   enabled: true
   image:
     repository: prohankumar/eventview
-    tag: 0.08
+    tag: 0.09
   redis:
     port: 6379
     password: redis_pass
@@ -198,7 +198,7 @@ joblauncher:
     consumergroupid: joblauncher
     jobqueuetopic: jobqueue
   profileimagewithtag: prohankumar/profilekafkastreams:0.12
-  flowimagewithtag: prohankumar/flowkafkastreams:0.01
+  flowimagewithtag: prohankumar/flowkafkastreams:0.02
 
 
 joblauncherspark:
