@@ -97,7 +97,7 @@ cp-schema-registry:
 cp-kafka-connect:
   enabled: true
   image: prohankumar/kafka-connect
-  imageTag: latest
+  imageTag: 5.3.1
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
   ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
   imagePullSecrets:
@@ -141,7 +141,7 @@ eventview:
   enabled: true
   image:
     repository: prohankumar/eventview
-    tag: 0.09
+    tag: 0.1
   redis:
     port: 6379
     password: redis_pass
