@@ -31,6 +31,7 @@ configurationOverrides: {}
 customEnv: {}
 
 ## The port on which the Schema Registry will be available and serving requests
+serviceType: NodePort
 servicePort: 8081
 
 ## Schema registry JVM Heap Option
