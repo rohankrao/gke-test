@@ -39,7 +39,7 @@ cp-zookeeper:
 cp-kafka:
   enabled: true
   brokers: 1
-  image: confluentinc/cp-kafka
+  image: prohankumar/cp-kafka
   imageTag: 5.3.1
   ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
   ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
@@ -63,6 +63,7 @@ cp-kafka:
   env:
     KAFKA_MESSAGE_MAX_BYTES: 100485760
     KAFKA_MAX_PARTITION_FETCH_BYTES: 100485760
+    KAFKA_METRIC_REPORTERS: "com.linkedin.kafka.cruisecontrol.metricsreporter.CruiseControlMetricsReporter"
   configurationOverrides:
     "offsets.topic.replication.factor": "1"
     "default.replication.factor": 1
@@ -141,7 +142,7 @@ eventview:
   enabled: true
   image:
     repository: prohankumar/eventview
-    tag: 0.1
+    tag: 0.11
   redis:
     port: 6379
     password: redis_pass
@@ -161,7 +162,7 @@ kafkaadmin:
   enabled: true
   image:
     repository: prohankumar/kafkaadmin
-    tag: 0.03
+    tag: 0.04
   kafka:
     kafkaConsumerGroupIDAdmin: kafkaAdmin
   druid:
@@ -177,7 +178,7 @@ metadata:
   enabled: true
   image:
     repository: prohankumar/metadata
-    tag: latest
+    tag: 0.01
   schemaSubjectNamePrefix: metadata
   service:
     enabled: true
@@ -192,13 +193,13 @@ joblauncher:
   replicaCount: 1
   image:
     repository: prohankumar/joblauncher
-    tag: 0.12
+    tag: 0.13
     pullPolicy: IfNotPresent
   kafka:
     consumergroupid: joblauncher
     jobqueuetopic: jobqueue
-  profileimagewithtag: prohankumar/profilekafkastreams:0.12
-  flowimagewithtag: prohankumar/flowkafkastreams:0.02
+  profileimagewithtag: prohankumar/profilekafkastreams:0.13
+  flowimagewithtag: prohankumar/flowkafkastreams:0.03
 
 
 joblauncherspark:
@@ -219,7 +220,7 @@ jobserver:
   replicaCount: 1
   image:
     repository: prohankumar/jobserver
-    tag: 0.34
+    tag: 0.35
     pullPolicy: IfNotPresent
   kafka:
     jobqueuetopic: jobqueue
@@ -231,7 +232,7 @@ queryconsumeroffsets:
   replicaCount: 1
   image:
     repository: prohankumar/queryconsumeroffsets
-    tag: 0.05
+    tag: 0.06
     pullPolicy: IfNotPresent
   kafka:
     OFFSET_CONSUMER_GROUP_ID: consumer-offset3
